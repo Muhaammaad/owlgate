@@ -26,6 +26,11 @@ defmodule OwlGate.Access.Application do
     timestamps(type: :utc_datetime)
   end
 
+  @doc "Cast-only changeset for HTML forms before submit."
+  def form_changeset(application, attrs \\ %{}) do
+    cast(application, attrs, [:name, :slug, :risk_level, :active, :requires_mfa, :owner_id])
+  end
+
   def changeset(application, attrs) do
     application
     |> cast(attrs, [:name, :slug, :risk_level, :active, :requires_mfa, :owner_id])

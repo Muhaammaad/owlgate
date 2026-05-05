@@ -11,6 +11,55 @@ defmodule OwlGateWeb.Layouts do
   # and other static content.
   embed_templates "layouts/*"
 
+  attr :current_user, :any, default: nil, doc: "signed-in user for operator navigation links"
+
+  attr :dev_routes, :boolean,
+    default: false,
+    doc: "when true, show dev session link (compile-time / env driven)"
+
+  def layouts_main_nav(assigns) do
+    ~H"""
+    <header class="navbar px-4 sm:px-6 lg:px-8">
+      <div class="flex-1">
+        <a href="/" class="flex-1 flex w-fit items-center gap-2">
+          <img src={~p"/images/logo.svg"} width="36" />
+          <span class="text-sm font-semibold">OwlGate</span>
+        </a>
+      </div>
+      <div class="flex-none">
+        <ul class="flex flex-column px-1 space-x-4 items-center">
+          <%= if @current_user do %>
+            <li><.link navigate={~p"/dashboard"} class="btn btn-ghost btn-sm">Dashboard</.link></li>
+            <li>
+              <.link navigate={~p"/access-requests"} class="btn btn-ghost btn-sm">Requests</.link>
+            </li>
+            <li><.link navigate={~p"/grants"} class="btn btn-ghost btn-sm">Grants</.link></li>
+            <li><.link navigate={~p"/audit-events"} class="btn btn-ghost btn-sm">Audit</.link></li>
+            <%= if OwlGate.Policy.AdminPolicy.admin?(@current_user) do %>
+              <li>
+                <.link navigate={~p"/admin/users"} class="btn btn-ghost btn-sm">Admin users</.link>
+              </li>
+              <li>
+                <.link navigate={~p"/admin/applications"} class="btn btn-ghost btn-sm">
+                  Admin apps
+                </.link>
+              </li>
+            <% end %>
+          <% end %>
+          <%= if @dev_routes do %>
+            <li>
+              <a href="/dev/session" class="btn btn-outline btn-sm">Dev sign-in</a>
+            </li>
+          <% end %>
+          <li>
+            <.theme_toggle />
+          </li>
+        </ul>
+      </div>
+    </header>
+    """
+  end
+
   @doc """
   Renders your app layout.
 
@@ -41,30 +90,7 @@ defmodule OwlGateWeb.Layouts do
 
   def app(assigns) do
     ~H"""
-    <header class="navbar px-4 sm:px-6 lg:px-8">
-      <div class="flex-1">
-        <a href="/" class="flex-1 flex w-fit items-center gap-2">
-          <img src={~p"/images/logo.svg"} width="36" />
-          <span class="text-sm font-semibold">OwlGate</span>
-        </a>
-      </div>
-      <div class="flex-none">
-        <ul class="flex flex-column px-1 space-x-4 items-center">
-          <li :if={@current_user}>
-            <.link navigate={~p"/dashboard"} class="btn btn-ghost btn-sm">Dashboard</.link>
-          </li>
-          <li :if={@current_user}>
-            <.link navigate={~p"/access-requests"} class="btn btn-ghost btn-sm">Requests</.link>
-          </li>
-          <li :if={@dev_routes}>
-            <a href="/dev/session" class="btn btn-outline btn-sm">Dev sign-in</a>
-          </li>
-          <li>
-            <.theme_toggle />
-          </li>
-        </ul>
-      </div>
-    </header>
+    <.layouts_main_nav current_user={@current_user} dev_routes={@dev_routes} />
 
     <main class="px-4 py-20 sm:px-6 lg:px-8">
       <div class="mx-auto max-w-4xl space-y-4">

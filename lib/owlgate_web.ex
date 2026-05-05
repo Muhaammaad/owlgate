@@ -86,6 +86,7 @@ defmodule OwlGateWeb do
       import Phoenix.HTML
       # Core UI components
       import OwlGateWeb.CoreComponents
+      import OwlGateWeb.OperatorComponents
 
       # Common modules used in templates
       alias Phoenix.LiveView.JS

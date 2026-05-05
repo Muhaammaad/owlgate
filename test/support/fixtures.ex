@@ -31,6 +31,11 @@ defmodule OwlGate.Fixtures do
         manager_id: nil
       })
 
+    pw = Keyword.get(opts, :password, "Password123!")
+    _ = Accounts.set_password!(owner, pw)
+    _ = Accounts.set_password!(manager, pw)
+    _ = Accounts.set_password!(employee, pw)
+
     slug = Keyword.get(opts, :slug, "app-#{uniq}")
 
     {:ok, app} =

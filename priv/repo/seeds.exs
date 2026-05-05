@@ -20,6 +20,11 @@ defmodule OwlGate.Seeds do
       manager = ensure_user!("manager@owlgate.local", %{name: "Morgan Manager", role: :manager})
       employee = ensure_user!("employee@owlgate.local", %{name: "Ed Employee", role: :employee})
 
+      demo_pw = "Password123!"
+      Accounts.set_password!(admin, demo_pw)
+      Accounts.set_password!(manager, demo_pw)
+      Accounts.set_password!(employee, demo_pw)
+
       ensure_application!("demo-portal", %{
         name: "Demo Portal",
         slug: "demo-portal",
@@ -32,14 +37,14 @@ defmodule OwlGate.Seeds do
       IO.puts("""
       Seed complete.
 
-      Users (sign in via Dev session at /dev/session when dev_routes is enabled):
+      Sign in at /login with any seeded user (password: #{demo_pw}):
         admin@owlgate.local     (#{admin.id}) — admin
         manager@owlgate.local   (#{manager.id}) — manager
         employee@owlgate.local  (#{employee.id}) — employee
 
       Application: demo-portal (owner: admin)
 
-      Next: visit http://localhost:4000 → Dashboard / Access requests, or /dev/session to impersonate.
+      Next: visit http://localhost:4000 → Sign in, then Dashboard / Requests. With dev_routes, /dev/session still works.
       """)
     end)
     |> case do

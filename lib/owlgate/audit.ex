@@ -26,12 +26,19 @@ defmodule OwlGate.Audit do
 
   @doc """
   Lists audit events with optional actor/action filters.
+
+  Supports `:limit` (default 200) and preloads `:actor` for UI display.
   """
   def list_events(opts \\ []) do
+    limit = Keyword.get(opts, :limit, 200)
+
     Event
-    |> maybe_filter_actor(opts[:actor_id])
-    |> maybe_filter_action(opts[:action])
+    |> maybe_filter_actor(Keyword.get(opts, :actor_id))
+    |> maybe_filter_action(Keyword.get(opts, :action))
+    |> maybe_filter_entity_type(Keyword.get(opts, :entity_type))
     |> order_by(desc: :occurred_at)
+    |> limit(^limit)
+    |> preload([:actor])
     |> Repo.all()
   end
 
@@ -39,5 +46,12 @@ defmodule OwlGate.Audit do
   defp maybe_filter_actor(query, actor_id), do: where(query, [e], e.actor_id == ^actor_id)
 
   defp maybe_filter_action(query, nil), do: query
+  defp maybe_filter_action(query, ""), do: query
   defp maybe_filter_action(query, action), do: where(query, [e], e.action == ^action)
+
+  defp maybe_filter_entity_type(query, nil), do: query
+  defp maybe_filter_entity_type(query, ""), do: query
+
+  defp maybe_filter_entity_type(query, entity_type),
+    do: where(query, [e], e.entity_type == ^entity_type)
 end

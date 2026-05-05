@@ -24,6 +24,8 @@ defmodule OwlGateWeb.Router do
       live "/dashboard", DashboardLive
       live "/access-requests", AccessRequestLive.Index
       live "/access-requests/:id", AccessRequestLive.Show
+      live "/grants", GrantLive.Index
+      live "/audit-events", AuditLive.Index
     end
   end
 

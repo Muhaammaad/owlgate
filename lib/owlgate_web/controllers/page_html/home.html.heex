@@ -2,7 +2,20 @@
 
 <div class="min-h-[70vh] px-4 py-16 sm:px-6 lg:px-8">
   <div class="mx-auto max-w-xl space-y-8">
-    <div class="flex justify-end">
+    <div class="flex justify-end items-center gap-3 flex-wrap">
+      <%= if assigns[:current_user] do %>
+        <span class="text-xs text-base-content/70 hidden sm:inline">
+          {@current_user.email}
+        </span>
+        <form action={~p"/logout"} method="post" class="inline">
+          <input type="hidden" name="_csrf_token" value={@csrf_token} />
+          <input type="hidden" name="_method" value="delete" />
+          <button type="submit" class="btn btn-outline btn-sm">Sign out</button>
+        </form>
+      <% else %>
+        <.link navigate={~p"/login"} class="btn btn-ghost btn-sm">Sign in</.link>
+        <.link navigate={~p"/register"} class="btn btn-outline btn-sm">Register</.link>
+      <% end %>
       <Layouts.theme_toggle />
     </div>
 
@@ -12,17 +25,30 @@
         Access governance demo
       </h1>
       <p class="mt-4 text-base leading-relaxed text-base-content/80">
-        Request, approve, provision, and revoke application access with policy checks, audit events, and async connector jobs. Use the operator UI after signing in.
+        Request, approve, provision, and revoke application access with policy checks, audit events, and async connector jobs. Sign in to use the operator UI.
       </p>
     </div>
 
     <div class="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
-      <.link navigate={~p"/dashboard"} class="btn btn-primary">
-        Dashboard
-      </.link>
-      <.link navigate={~p"/access-requests"} class="btn btn-outline">
-        Access requests
-      </.link>
+      <%= if assigns[:current_user] do %>
+        <.link navigate={~p"/dashboard"} class="btn btn-primary">
+          Dashboard
+        </.link>
+        <.link navigate={~p"/access-requests"} class="btn btn-outline">
+          Access requests
+        </.link>
+        <%= if OwlGate.Policy.AdminPolicy.admin?(@current_user) do %>
+          <.link navigate={~p"/admin/users"} class="btn btn-outline">
+            Admin · Users
+          </.link>
+          <.link navigate={~p"/admin/applications"} class="btn btn-outline">
+            Admin · Applications
+          </.link>
+        <% end %>
+      <% else %>
+        <.link navigate={~p"/login"} class="btn btn-primary">Sign in</.link>
+        <.link navigate={~p"/register"} class="btn btn-outline">Create account</.link>
+      <% end %>
       <%= if Application.get_env(:owlgate, :dev_routes, false) do %>
         <a href="/dev/session" class="btn btn-outline btn-secondary">
           Dev sign-in
@@ -37,17 +63,14 @@
       </p>
     <% else %>
       <p class="rounded-box border border-base-300 bg-base-200/40 p-4 text-sm text-base-content/80">
+        Use <strong class="font-semibold">Sign in</strong>
+        with a seeded account after
+        <code class="text-xs font-mono">mix run priv/repo/seeds.exs</code>
+        (password shown in the seed summary). The first <strong>Register</strong>
+        user becomes admin when the database is empty.
         <%= if Application.get_env(:owlgate, :dev_routes, false) do %>
-          You are not signed in. In development, use
-          <strong class="font-semibold">Dev sign-in</strong>
-          to pick a seeded user
-          (<code class="text-xs">manager@owlgate.local</code> can approve;
-          <code class="text-xs">employee@owlgate.local</code>
-          can submit requests).
-        <% else %>
-          Configure session auth for production. For local demos, enable
-          <code class="text-xs">dev_routes</code>
-          in config.
+          In development you can still use <strong>Dev sign-in</strong>
+          to pick any user without a password.
         <% end %>
       </p>
     <% end %>

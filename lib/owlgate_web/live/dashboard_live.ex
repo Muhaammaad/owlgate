@@ -5,8 +5,6 @@ defmodule OwlGateWeb.DashboardLive do
   alias OwlGate.Access
   alias OwlGate.Access.Constants
 
-  on_mount {OwlGateWeb.Live.Auth, :require_authenticated_user}
-
   @impl true
   def mount(_params, _session, socket) do
     {:ok, assign_snapshot(socket)}
@@ -20,78 +18,44 @@ defmodule OwlGateWeb.DashboardLive do
   defp assign_snapshot(socket) do
     snap = Access.dashboard_snapshot()
 
-    request_rows =
-      Enum.map(Constants.request_statuses(), fn status ->
-        {status, Map.fetch!(snap.requests, status)}
-      end)
-
-    grant_rows =
-      Enum.map(Constants.grant_statuses(), fn status ->
-        {status, Map.fetch!(snap.grants, status)}
-      end)
-
     socket
-    |> assign(:snapshot, snap)
-    |> assign(:request_rows, request_rows)
-    |> assign(:grant_rows, grant_rows)
+    |> assign(:request_rows, row_pairs(snap.requests, Constants.request_statuses()))
+    |> assign(:grant_rows, row_pairs(snap.grants, Constants.grant_statuses()))
+  end
+
+  defp row_pairs(counts_map, statuses) do
+    Enum.map(statuses, fn status -> {status, Map.fetch!(counts_map, status)} end)
   end
 
   @impl true
   def render(assigns) do
     ~H"""
-    <Layouts.app
+    <.operator_shell
       flash={@flash}
       current_user={@current_user}
       dev_routes={Application.get_env(:owlgate, :dev_routes, false)}
+      wrapper_class="space-y-6"
     >
-      <div class="space-y-6 max-w-4xl">
-        <div class="flex justify-between items-start gap-4 flex-wrap">
-          <div>
-            <h1 class="text-2xl font-semibold">Operator dashboard</h1>
-            <p class="text-base-content/70 text-sm mt-1">
-              Signed in as {@current_user.name} ({@current_user.role})
-            </p>
-          </div>
-          <button type="button" phx-click="refresh" class="btn btn-outline btn-sm">
-            Refresh
-          </button>
+      <div class="flex justify-between items-start gap-4 flex-wrap">
+        <div>
+          <h1 class="text-2xl font-semibold">Operator dashboard</h1>
+          <p class="text-base-content/70 text-sm mt-1">
+            Signed in as {@current_user.name} ({@current_user.role})
+          </p>
         </div>
-
-        <section>
-          <h2 class="font-medium mb-3">Access requests</h2>
-          <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
-            <div
-              :for={{status, count} <- @request_rows}
-              class="rounded-box border border-base-300 bg-base-200/40 p-4"
-            >
-              <div class="text-xs uppercase text-base-content/60">{status_label(status)}</div>
-              <div class="text-2xl font-semibold tabular-nums">{count}</div>
-            </div>
-          </div>
-        </section>
-
-        <section>
-          <h2 class="font-medium mb-3">Grants</h2>
-          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            <div
-              :for={{status, count} <- @grant_rows}
-              class="rounded-box border border-base-300 bg-base-200/40 p-4"
-            >
-              <div class="text-xs uppercase text-base-content/60">{status_label(status)}</div>
-              <div class="text-2xl font-semibold tabular-nums">{count}</div>
-            </div>
-          </div>
-        </section>
-
-        <div class="flex gap-3 flex-wrap">
-          <.link navigate={~p"/access-requests"} class="btn btn-primary">
-            Manage access requests
-          </.link>
-        </div>
+        <button type="button" phx-click="refresh" class="btn btn-outline btn-sm">
+          Refresh
+        </button>
       </div>
-    </Layouts.app>
+
+      <.dashboard_snapshot_cards request_rows={@request_rows} grant_rows={@grant_rows} />
+
+      <div class="flex gap-3 flex-wrap">
+        <.link navigate={~p"/access-requests"} class="btn btn-primary">
+          Manage access requests
+        </.link>
+      </div>
+    </.operator_shell>
     """
   end
-
-  defp status_label(atom) when is_atom(atom), do: Atom.to_string(atom)
 end

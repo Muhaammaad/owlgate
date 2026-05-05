@@ -35,11 +35,28 @@ defmodule OwlGate.Access do
           | :inactive_application
           | :denial_reason_required
 
-  @doc "Lists all managed applications."
-  def list_applications, do: Repo.all(Application)
+  @doc "Lists all managed applications with owner preloaded."
+  def list_applications do
+    Application
+    |> preload(:owner)
+    |> order_by([a], asc: a.name)
+    |> Repo.all()
+  end
 
   @doc "Gets an application by id and raises if missing."
-  def get_application!(id), do: Repo.get!(Application, id)
+  def get_application!(id) do
+    Application
+    |> Repo.get!(id)
+    |> Repo.preload(:owner)
+  end
+
+  @doc "Fetches one application or `{:error, :not_found}`."
+  def fetch_application(id) do
+    case Repo.get(Application, id) do
+      nil -> {:error, :not_found}
+      app -> {:ok, Repo.preload(app, :owner)}
+    end
+  end
 
   @doc "Creates an application with normalized slug fields."
   def create_application(attrs) do
@@ -48,36 +65,48 @@ defmodule OwlGate.Access do
     |> Repo.insert()
   end
 
+  @doc "Updates an application."
+  def update_application(%Application{} = application, attrs) do
+    application
+    |> Application.changeset(attrs)
+    |> Repo.update()
+  end
+
+  @doc "Deletes an application."
+  def delete_application(%Application{} = application), do: Repo.delete(application)
+
+  def change_application(application, attrs \\ %{})
+
+  def change_application(%Application{id: nil} = application, attrs) do
+    Application.form_changeset(application, attrs)
+  end
+
+  def change_application(%Application{} = application, attrs) do
+    Application.changeset(application, attrs)
+  end
+
   @doc """
   Aggregate counts by access request status and grant status for operator dashboards.
   """
   @spec dashboard_snapshot() :: %{requests: map(), grants: map()}
   def dashboard_snapshot do
-    request_rows =
-      AccessRequest
+    %{
+      requests: counts_for_status(AccessRequest, Constants.request_statuses()),
+      grants: counts_for_status(AccessGrant, Constants.grant_statuses())
+    }
+  end
+
+  defp counts_for_status(queryable, statuses) do
+    rows =
+      queryable
       |> group_by([r], r.status)
       |> select([r], {r.status, count(r.id)})
       |> Repo.all()
 
-    grant_rows =
-      AccessGrant
-      |> group_by([g], g.status)
-      |> select([g], {g.status, count(g.id)})
-      |> Repo.all()
-
-    requests =
-      Constants.request_statuses()
-      |> Enum.map(&{&1, 0})
-      |> Map.new()
-      |> then(&Map.merge(&1, Map.new(request_rows)))
-
-    grants =
-      Constants.grant_statuses()
-      |> Enum.map(&{&1, 0})
-      |> Map.new()
-      |> then(&Map.merge(&1, Map.new(grant_rows)))
-
-    %{requests: requests, grants: grants}
+    statuses
+    |> Enum.map(&{&1, 0})
+    |> Map.new()
+    |> Map.merge(Map.new(rows))
   end
 
   @doc "Lists access requests with related users and applications."
@@ -102,6 +131,33 @@ defmodule OwlGate.Access do
     case Repo.get(AccessRequest, id) do
       nil -> {:error, :not_found}
       request -> {:ok, Repo.preload(request, [:user, :application, :reviewed_by])}
+    end
+  end
+
+  @doc """
+  Lists access grants with holders, apps, and originating request references.
+  """
+  def list_grants(opts \\ []) do
+    status = Keyword.get(opts, :status)
+
+    AccessGrant
+    |> order_by(desc: :updated_at)
+    |> maybe_filter_grants(status)
+    |> preload([:user, :application, :access_request])
+    |> Repo.all()
+  end
+
+  defp maybe_filter_grants(query, nil), do: query
+
+  defp maybe_filter_grants(query, status) when is_atom(status) do
+    where(query, [g], g.status == ^status)
+  end
+
+  @doc "Loads one grant preloaded or `{:error, :not_found}`."
+  def fetch_grant(id) do
+    case Repo.get(AccessGrant, id) do
+      nil -> {:error, :not_found}
+      grant -> {:ok, Repo.preload(grant, [:user, :application, :access_request, :granted_by])}
     end
   end
 
