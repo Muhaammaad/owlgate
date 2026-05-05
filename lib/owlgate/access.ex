@@ -1,0 +1,91 @@
+defmodule OwlGate.Access do
+  @moduledoc """
+  Public access lifecycle facade.
+
+  Keeps external API stable while delegating each lifecycle action to focused operation modules.
+  """
+
+  alias OwlGate.Access.Application
+
+  alias OwlGate.Access.Operations.{
+    ActivateGrant,
+    ApproveRequest,
+    CreateRequest,
+    DenyRequest,
+    RequestRevoke,
+    TransitionGrantStatus,
+    TransitionRequestStatus
+  }
+
+  alias OwlGate.Accounts.User
+  alias OwlGate.Repo
+
+  @type domain_error ::
+          :not_found
+          | :forbidden
+          | :invalid_status
+          | :duplicate_request
+          | :already_has_active_grant
+          | :self_approval_not_allowed
+          | :high_risk_requires_owner_or_admin
+          | :inactive_application
+          | :denial_reason_required
+
+  @doc "Lists all managed applications."
+  def list_applications, do: Repo.all(Application)
+
+  @doc "Gets an application by id and raises if missing."
+  def get_application!(id), do: Repo.get!(Application, id)
+
+  @doc "Creates an application with normalized slug fields."
+  def create_application(attrs) do
+    %Application{}
+    |> Application.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  @doc """
+  Creates an access request for the actor if policy and dedupe checks pass.
+  """
+  def create_request(%User{} = actor, attrs), do: CreateRequest.run(actor, attrs)
+
+  @doc "Approves a pending request after policy and risk checks."
+  def approve_request(%User{} = actor, request_id), do: ApproveRequest.run(actor, request_id)
+
+  @doc "Denies a pending request."
+  def deny_request(%User{} = actor, request_id, reason \\ nil),
+    do: DenyRequest.run(actor, request_id, reason)
+
+  @doc "Transitions approved request into provisioning state."
+  def mark_provisioning(%User{} = actor, request_id),
+    do:
+      TransitionRequestStatus.run(
+        actor,
+        request_id,
+        :approved,
+        :provisioning,
+        "access_request.provisioning"
+      )
+
+  @doc "Creates an active grant for a provisioning request."
+  def activate_grant(%User{} = actor, request_id, external_ref \\ nil),
+    do: ActivateGrant.run(actor, request_id, external_ref)
+
+  @doc "Marks an active grant for async revoke processing."
+  def request_revoke(%User{} = actor, grant_id), do: RequestRevoke.run(actor, grant_id)
+
+  @doc "Finalizes grant revoke transition."
+  def complete_revoke(%User{} = actor, grant_id),
+    do: TransitionGrantStatus.run(actor, grant_id, :revoking, :revoked, "access_grant.revoked")
+
+  @doc "Marks provisioning as failed."
+  def fail_request(%User{} = actor, request_id),
+    do:
+      TransitionRequestStatus.run(
+        actor,
+        request_id,
+        :provisioning,
+        :failed,
+        "access_request.failed"
+      )
+end
