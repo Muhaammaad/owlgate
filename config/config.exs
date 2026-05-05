@@ -12,6 +12,18 @@ config :owlgate,
   ecto_repos: [OwlGate.Repo],
   generators: [timestamp_type: :utc_datetime]
 
+config :owlgate, Oban,
+  repo: OwlGate.Repo,
+  plugins: [
+    {Oban.Plugins.Pruner, max_age: 60 * 60 * 24 * 7}
+  ],
+  queues: [
+    provisioning: 10,
+    revocations: 10
+  ]
+
+config :owlgate, :connector_adapter, OwlGate.Connectors.MockProvider
+
 # Configure the endpoint
 config :owlgate, OwlGateWeb.Endpoint,
   url: [host: "localhost"],

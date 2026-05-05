@@ -18,6 +18,7 @@ defmodule OwlGate.Access do
   }
 
   alias OwlGate.Accounts.User
+  alias OwlGate.Workers.{ProvisionAccessJob, RevokeAccessJob}
   alias OwlGate.Repo
 
   @type domain_error ::
@@ -50,7 +51,12 @@ defmodule OwlGate.Access do
   def create_request(%User{} = actor, attrs), do: CreateRequest.run(actor, attrs)
 
   @doc "Approves a pending request after policy and risk checks."
-  def approve_request(%User{} = actor, request_id), do: ApproveRequest.run(actor, request_id)
+  def approve_request(%User{} = actor, request_id) do
+    with {:ok, request} <- ApproveRequest.run(actor, request_id),
+         {:ok, _job} <- enqueue_provision_job(actor.id, request.id) do
+      {:ok, request}
+    end
+  end
 
   @doc "Denies a pending request."
   def deny_request(%User{} = actor, request_id, reason \\ nil),
@@ -72,7 +78,12 @@ defmodule OwlGate.Access do
     do: ActivateGrant.run(actor, request_id, external_ref)
 
   @doc "Marks an active grant for async revoke processing."
-  def request_revoke(%User{} = actor, grant_id), do: RequestRevoke.run(actor, grant_id)
+  def request_revoke(%User{} = actor, grant_id) do
+    with {:ok, grant} <- RequestRevoke.run(actor, grant_id),
+         {:ok, _job} <- enqueue_revoke_job(actor.id, grant.id) do
+      {:ok, grant}
+    end
+  end
 
   @doc "Finalizes grant revoke transition."
   def complete_revoke(%User{} = actor, grant_id),
@@ -88,4 +99,32 @@ defmodule OwlGate.Access do
         :failed,
         "access_request.failed"
       )
+
+  @doc false
+  def enqueue_provision_job(actor_id, request_id, opts \\ %{}) do
+    args =
+      %{
+        "actor_id" => actor_id,
+        "request_id" => request_id
+      }
+      |> Map.merge(opts)
+
+    args
+    |> ProvisionAccessJob.new()
+    |> Oban.insert()
+  end
+
+  @doc false
+  def enqueue_revoke_job(actor_id, grant_id, opts \\ %{}) do
+    args =
+      %{
+        "actor_id" => actor_id,
+        "grant_id" => grant_id
+      }
+      |> Map.merge(opts)
+
+    args
+    |> RevokeAccessJob.new()
+    |> Oban.insert()
+  end
 end

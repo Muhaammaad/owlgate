@@ -10,6 +10,7 @@ defmodule OwlGate.Application do
     children = [
       OwlGateWeb.Telemetry,
       OwlGate.Repo,
+      {Oban, Application.fetch_env!(:owlgate, Oban)},
       {DNSCluster, query: Application.get_env(:owlgate, :dns_cluster_query) || :ignore},
       {Phoenix.PubSub, name: OwlGate.PubSub},
       # Start a worker by calling: OwlGate.Worker.start_link(arg)
