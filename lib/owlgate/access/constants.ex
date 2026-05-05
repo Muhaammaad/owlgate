@@ -1,6 +1,20 @@
 defmodule OwlGate.Access.Constants do
   @moduledoc """
   Central constants for access lifecycle transitions and audit entity names.
+
+  ## Examples
+
+      iex> OwlGate.Access.Constants.request_statuses()
+      [:pending, :approved, :denied, :provisioning, :provisioned, :failed]
+
+      iex> OwlGate.Access.Constants.grant_statuses()
+      [:active, :revoking, :revoked, :failed]
+
+      iex> :pending in OwlGate.Access.Constants.request_open_statuses()
+      true
+
+      iex> OwlGate.Access.Constants.entity_access_request()
+      "access_request"
   """
 
   @request_open_statuses [:pending, :approved, :provisioning]

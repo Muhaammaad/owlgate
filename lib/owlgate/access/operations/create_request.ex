@@ -11,16 +11,24 @@ defmodule OwlGate.Access.Operations.CreateRequest do
   def run(%User{} = actor, attrs) do
     with {:ok, application} <- QueryHelpers.fetch_application(attrs),
          true <- AccessPolicy.can_request?(actor, application) || {:error, :forbidden},
-         false <-
-           QueryHelpers.has_open_request?(actor.id, application.id) ||
-             {:error, :duplicate_request},
-         false <-
-           QueryHelpers.has_active_grant?(actor.id, application.id) ||
-             {:error, :already_has_active_grant} do
+         :ok <- forbid_open_request(actor.id, application.id),
+         :ok <- forbid_active_grant(actor.id, application.id) do
       attrs
       |> enrich_attrs(actor.id, application.id)
       |> insert_with_audit(actor.id)
     end
+  end
+
+  defp forbid_open_request(user_id, application_id) do
+    if QueryHelpers.has_open_request?(user_id, application_id),
+      do: {:error, :duplicate_request},
+      else: :ok
+  end
+
+  defp forbid_active_grant(user_id, application_id) do
+    if QueryHelpers.has_active_grant?(user_id, application_id),
+      do: {:error, :already_has_active_grant},
+      else: :ok
   end
 
   defp enrich_attrs(attrs, actor_id, application_id) do

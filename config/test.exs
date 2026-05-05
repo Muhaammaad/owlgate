@@ -1,5 +1,7 @@
 import Config
 
+config :owlgate, dev_routes: false
+
 # Configure your database
 #
 # The MIX_TEST_PARTITION environment variable can be used

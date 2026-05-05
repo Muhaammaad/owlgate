@@ -18,8 +18,11 @@ defmodule OwlGate.Access do
   }
 
   alias OwlGate.Accounts.User
+  alias OwlGate.Access.{AccessGrant, AccessRequest, Constants}
   alias OwlGate.Workers.{ProvisionAccessJob, RevokeAccessJob}
   alias OwlGate.Repo
+
+  import Ecto.Query
 
   @type domain_error ::
           :not_found
@@ -43,6 +46,63 @@ defmodule OwlGate.Access do
     %Application{}
     |> Application.changeset(attrs)
     |> Repo.insert()
+  end
+
+  @doc """
+  Aggregate counts by access request status and grant status for operator dashboards.
+  """
+  @spec dashboard_snapshot() :: %{requests: map(), grants: map()}
+  def dashboard_snapshot do
+    request_rows =
+      AccessRequest
+      |> group_by([r], r.status)
+      |> select([r], {r.status, count(r.id)})
+      |> Repo.all()
+
+    grant_rows =
+      AccessGrant
+      |> group_by([g], g.status)
+      |> select([g], {g.status, count(g.id)})
+      |> Repo.all()
+
+    requests =
+      Constants.request_statuses()
+      |> Enum.map(&{&1, 0})
+      |> Map.new()
+      |> then(&Map.merge(&1, Map.new(request_rows)))
+
+    grants =
+      Constants.grant_statuses()
+      |> Enum.map(&{&1, 0})
+      |> Map.new()
+      |> then(&Map.merge(&1, Map.new(grant_rows)))
+
+    %{requests: requests, grants: grants}
+  end
+
+  @doc "Lists access requests with related users and applications."
+  def list_access_requests(opts \\ []) do
+    status = Keyword.get(opts, :status)
+
+    AccessRequest
+    |> order_by(desc: :inserted_at)
+    |> maybe_filter_requests(status)
+    |> preload([:user, :application, :reviewed_by])
+    |> Repo.all()
+  end
+
+  defp maybe_filter_requests(query, nil), do: query
+
+  defp maybe_filter_requests(query, status) when is_atom(status) do
+    where(query, [r], r.status == ^status)
+  end
+
+  @doc "Loads a single access request with associations or returns `:not_found`."
+  def fetch_access_request(id) do
+    case Repo.get(AccessRequest, id) do
+      nil -> {:error, :not_found}
+      request -> {:ok, Repo.preload(request, [:user, :application, :reviewed_by])}
+    end
   end
 
   @doc """

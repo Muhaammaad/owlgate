@@ -30,7 +30,11 @@ defmodule OwlGate.Policy.AccessPolicy do
   def can_review?(%User{role: role}) when role in [:manager, :admin], do: true
   def can_review?(_), do: false
 
-  @doc "Prevents requesters from approving their own requests."
+  @doc """
+  Returns true when the reviewer and requester are different users.
+
+  Naming follows the guard \"prevent self-approval\": when this returns false, the actor must not approve.
+  """
   def can_self_approve?(%User{id: actor_id}, %User{id: requester_id}),
     do: actor_id != requester_id
 

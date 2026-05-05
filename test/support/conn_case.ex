@@ -17,6 +17,10 @@ defmodule OwlGateWeb.ConnCase do
 
   use ExUnit.CaseTemplate
 
+  import Plug.Conn
+
+  alias OwlGate.Accounts.User
+
   using do
     quote do
       # The default endpoint for testing
@@ -29,6 +33,17 @@ defmodule OwlGateWeb.ConnCase do
       import Phoenix.ConnTest
       import OwlGateWeb.ConnCase
     end
+  end
+
+  @session_key "current_user_id"
+
+  @doc """
+  Puts `user.id` into the test session plug so LiveViews behave like signed-in browsers.
+  """
+  def log_in_user(conn, %User{id: id}) do
+    conn
+    |> Plug.Test.init_test_session(%{})
+    |> put_session(@session_key, id)
   end
 
   setup tags do
