@@ -42,6 +42,7 @@ defmodule OwlGate.Accounts.User do
     |> update_change(:email, fn e ->
       if is_binary(e), do: String.downcase(String.trim(e)), else: e
     end)
+    |> update_change(:password, fn p -> if is_binary(p), do: String.trim(p), else: p end)
   end
 
   @doc "Public self-registration insert changeset."

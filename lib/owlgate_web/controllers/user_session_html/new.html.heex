@@ -2,10 +2,12 @@
 
 <div class="min-h-[70vh] px-4 py-16 sm:px-6 lg:px-8">
   <div class="mx-auto max-w-md space-y-6">
-    <div class="flex justify-between items-center gap-4">
+    <div class="flex items-center gap-4">
       <h1 class="text-2xl font-semibold">{gettext("Sign in")}</h1>
-      <Layouts.locale_switcher />
-      <Layouts.theme_toggle />
+      <div class="ml-auto flex items-center gap-2">
+        <Layouts.locale_switcher />
+        <Layouts.theme_toggle />
+      </div>
     </div>
 
     <p class="text-sm text-base-content/70">
@@ -51,37 +53,27 @@
     >
       <input type="hidden" name="_csrf_token" value={@csrf_token} />
 
-      <label class="form-control w-full">
-        <span class="label-text text-sm">{gettext("Email")}</span>
-        <input
-          type="email"
-          name="user[email]"
-          id="login-email"
-          required
-          autocomplete="off"
-          autocapitalize="none"
-          spellcheck="false"
-          placeholder={gettext("you@example.com")}
-          readonly
-          onfocus="this.removeAttribute('readonly')"
-          class="input input-bordered w-full"
-        />
-      </label>
+      <.auth_email_input
+        id="login-email"
+        name="user[email]"
+        required
+        autocomplete="off"
+        autocapitalize="none"
+        spellcheck="false"
+        placeholder={gettext("you@example.com")}
+        readonly
+        onfocus="this.removeAttribute('readonly')"
+      />
 
-      <label class="form-control w-full">
-        <span class="label-text text-sm">{gettext("Password")}</span>
-        <input
-          type="password"
-          name="user[password]"
-          id="login-password"
-          required
-          autocomplete="off"
-          placeholder={gettext("Enter your password")}
-          readonly
-          onfocus="this.removeAttribute('readonly')"
-          class="input input-bordered w-full"
-        />
-      </label>
+      <.auth_password_input
+        id="login-password"
+        name="user[password]"
+        required
+        autocomplete="off"
+        placeholder={gettext("Enter your password")}
+        readonly
+        onfocus="this.removeAttribute('readonly')"
+      />
 
       <button type="submit" class="btn btn-primary w-full my-4">{gettext("Sign in")}</button>
     </form>

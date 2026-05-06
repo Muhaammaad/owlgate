@@ -117,6 +117,151 @@ defmodule OwlGateWeb.CoreComponents do
   end
 
   @doc """
+  Dumb atom component for auth email fields.
+  """
+  attr :id, :string, required: true
+  attr :name, :string, required: true
+  attr :label, :string, default: nil
+  attr :value, :string, default: nil
+  attr :class, :string, default: "input input-bordered w-full"
+
+  attr :rest, :global,
+    include: ~w(required autocomplete autocapitalize spellcheck placeholder readonly onfocus)
+
+  def auth_email_input(assigns) do
+    ~H"""
+    <label class="form-control w-full">
+      <span class="label-text text-sm">{@label || gettext("Email")}</span>
+      <input
+        type="email"
+        id={@id}
+        name={@name}
+        value={@value}
+        class={@class}
+        {@rest}
+      />
+    </label>
+    """
+  end
+
+  @doc """
+  Dumb atom component for auth password fields with optional visibility toggle.
+  """
+  attr :id, :string, required: true
+  attr :name, :string, required: true
+  attr :label, :string, default: nil
+  attr :toggle?, :boolean, default: true
+  attr :class, :string, default: "input input-bordered w-full pr-10"
+
+  attr :rest, :global, include: ~w(required autocomplete placeholder readonly onfocus)
+
+  def auth_password_input(assigns) do
+    ~H"""
+    <label class="form-control w-full">
+      <span class="label-text text-sm">{@label || gettext("Password")}</span>
+      <div class="relative">
+        <input
+          type="password"
+          id={@id}
+          name={@name}
+          class={@class}
+          {@rest}
+        />
+        <button
+          :if={@toggle?}
+          type="button"
+          class="absolute right-3 top-1/2 z-10 -translate-y-1/2 text-base-content/60 hover:text-base-content focus:outline-none"
+          data-password-toggle
+          data-target={@id}
+          aria-label="Toggle password visibility"
+          aria-pressed="false"
+        >
+          <span class="block" data-eye-open>
+            <.icon name="hero-eye" class="h-4 w-4" />
+          </span>
+          <span class="hidden block" data-eye-closed>
+            <.icon name="hero-eye-slash" class="h-4 w-4" />
+          </span>
+        </button>
+      </div>
+    </label>
+    """
+  end
+
+  @doc """
+  Reusable card wrapper for forms and form-like sections.
+  """
+  attr :class, :string, default: "rounded-box border border-base-300 bg-base-200/30 p-6 space-y-4"
+  slot :inner_block, required: true
+
+  def form_card(assigns) do
+    ~H"""
+    <div class={@class}>
+      {render_slot(@inner_block)}
+    </div>
+    """
+  end
+
+  @doc """
+  Dumb labeled select atom component.
+  `options` should be `{value, label}` tuples.
+  """
+  attr :name, :string, required: true
+  attr :label, :string, required: true
+  attr :value, :any, default: nil
+  attr :options, :list, required: true
+  attr :prompt, :string, default: nil
+  attr :required, :boolean, default: false
+  attr :class, :string, default: "select select-bordered w-full"
+  attr :wrapper_class, :string, default: "form-control w-full"
+  attr :hint, :string, default: nil
+
+  def labeled_select(assigns) do
+    ~H"""
+    <label class={@wrapper_class}>
+      <span class="label-text text-sm">{@label}</span>
+      <select name={@name} class={@class} required={@required}>
+        <option :if={@prompt} value="">{@prompt}</option>
+        <%= for {val, text} <- @options do %>
+          <option value={val} selected={@value == val}>{text}</option>
+        <% end %>
+      </select>
+      <span :if={@hint} class="label-text-alt text-xs text-base-content/60 leading-snug pt-1">
+        {@hint}
+      </span>
+    </label>
+    """
+  end
+
+  @doc """
+  Dumb boolean checkbox row with hidden false value.
+  """
+  attr :name, :string, required: true
+  attr :label, :string, required: true
+  attr :checked, :boolean, default: false
+  attr :hint, :string, default: nil
+  attr :wrapper_class, :string, default: "form-control w-full gap-2"
+
+  def boolean_toggle(assigns) do
+    ~H"""
+    <div class={@wrapper_class}>
+      <label class="label cursor-pointer justify-start gap-3 py-0">
+        <input type="hidden" name={@name} value="false" />
+        <input
+          type="checkbox"
+          name={@name}
+          value="true"
+          checked={@checked}
+          class="checkbox checkbox-sm"
+        />
+        <span class="label-text">{@label}</span>
+      </label>
+      <p :if={@hint} class="text-xs text-base-content/60 leading-snug pl-9">{@hint}</p>
+    </div>
+    """
+  end
+
+  @doc """
   Renders an input with label and error messages.
 
   A `Phoenix.HTML.FormField` may be passed as argument,

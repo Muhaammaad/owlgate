@@ -145,7 +145,7 @@ defmodule OwlGateWeb.Admin.ApplicationLive.Form do
           </select>
         </label>
 
-        <label class="label cursor-pointer justify-start gap-3">
+        <label class="label cursor-pointer justify-start gap-3 my-4">
           <input type="hidden" name="application[active]" value="false" />
           <input
             type="checkbox"
@@ -169,7 +169,9 @@ defmodule OwlGateWeb.Admin.ApplicationLive.Form do
           <span class="label-text">{gettext("Requires MFA")}</span>
         </label>
 
-        <button type="submit" class="btn btn-primary">{gettext("Save")}</button>
+        <div class="flex justify-end">
+          <button type="submit" class="btn btn-primary">{gettext("Save")}</button>
+        </div>
       </.form>
     </.operator_shell>
     """

@@ -164,10 +164,10 @@ defmodule OwlGateWeb.Admin.UserLive.Form do
           </p>
         </div>
 
-        <.input
+        <.auth_password_input
           :if={is_nil(@user)}
-          field={f[:password]}
-          type="password"
+          id="admin-new-user-password"
+          name="user[password]"
           label={gettext("Password")}
           required
           autocomplete="new-password"
@@ -180,8 +180,9 @@ defmodule OwlGateWeb.Admin.UserLive.Form do
           label={gettext("Password (optional)")}
           autocomplete="new-password"
         />
-
-        <button type="submit" class="btn btn-primary">{gettext("Save")}</button>
+        <div class="flex justify-end my-4">
+          <button type="submit" class="btn btn-primary">{gettext("Save")}</button>
+        </div>
       </.form>
     </.operator_shell>
     """

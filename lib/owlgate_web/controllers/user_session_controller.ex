@@ -12,7 +12,7 @@ defmodule OwlGateWeb.UserSessionController do
 
   def create(conn, %{"user" => %{"email" => email, "password" => password}}) do
     email = String.trim(to_string(email))
-    password = to_string(password)
+    password = String.trim(to_string(password))
 
     case Accounts.authenticate_user(email, password) do
       {:ok, user} ->
@@ -50,6 +50,5 @@ defmodule OwlGateWeb.UserSessionController do
     |> redirect(to: ~p"/")
   end
 
-  defp redirect_path_for(%User{role: :admin}), do: ~p"/admin/users"
   defp redirect_path_for(%User{}), do: ~p"/dashboard"
 end

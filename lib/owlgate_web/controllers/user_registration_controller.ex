@@ -42,6 +42,5 @@ defmodule OwlGateWeb.UserRegistrationController do
     |> redirect(to: ~p"/register")
   end
 
-  defp redirect_path_for(%User{role: :admin}), do: ~p"/admin/users"
   defp redirect_path_for(%User{}), do: ~p"/dashboard"
 end

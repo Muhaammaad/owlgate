@@ -46,6 +46,32 @@ liveSocket.connect()
 // >> liveSocket.disableLatencySim()
 window.liveSocket = liveSocket
 
+const initPasswordToggles = () => {
+  document.querySelectorAll("[data-password-toggle]").forEach(button => {
+    if (button.dataset.bound === "true") return
+    button.dataset.bound = "true"
+
+    button.addEventListener("click", () => {
+      const targetId = button.getAttribute("data-target")
+      const input = targetId ? document.getElementById(targetId) : null
+      if (!input) return
+
+      const showPassword = input.type === "password"
+      input.type = showPassword ? "text" : "password"
+      button.setAttribute("aria-pressed", showPassword ? "true" : "false")
+
+      const openIcon = button.querySelector("[data-eye-open]")
+      const closedIcon = button.querySelector("[data-eye-closed]")
+
+      openIcon?.classList.toggle("hidden", showPassword)
+      closedIcon?.classList.toggle("hidden", !showPassword)
+    })
+  })
+}
+
+window.addEventListener("phx:page-loading-stop", initPasswordToggles)
+window.addEventListener("DOMContentLoaded", initPasswordToggles)
+
 // The lines below enable quality of life phoenix_live_reload
 // development features:
 //
