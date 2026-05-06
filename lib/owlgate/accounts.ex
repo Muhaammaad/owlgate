@@ -2,6 +2,7 @@ defmodule OwlGate.Accounts do
   @moduledoc "Accounts context for actor lifecycle and role management."
 
   import Ecto.Query, warn: false
+  import Ecto.Changeset
 
   alias OwlGate.Accounts.User
   alias OwlGate.Repo
@@ -72,9 +73,20 @@ defmodule OwlGate.Accounts do
 
   @doc "Registers a new user with the selected role."
   def register_user(attrs) do
-    %User{}
-    |> User.register_changeset(attrs)
-    |> Repo.insert()
+    changeset =
+      %User{}
+      |> User.register_changeset(attrs)
+
+    try do
+      Repo.insert(changeset)
+    rescue
+      error in [Ecto.ConstraintError] ->
+        if email_unique_constraint_error?(error) do
+          {:error, add_error(changeset, :email, "has already been taken")}
+        else
+          reraise error, __STACKTRACE__
+        end
+    end
   end
 
   @doc "Changeset for the registration HTML form."
@@ -131,4 +143,14 @@ defmodule OwlGate.Accounts do
     |> User.password_set_changeset(password)
     |> Repo.update!()
   end
+
+  defp email_unique_constraint_error?(%Ecto.ConstraintError{
+         type: :unique,
+         constraint: constraint
+       })
+       when is_binary(constraint) do
+    constraint in ["users_lower_email_idx", "users_email_index"]
+  end
+
+  defp email_unique_constraint_error?(_), do: false
 end

@@ -121,13 +121,43 @@ defmodule OwlGate.Access do
   def list_access_requests(opts \\ []) do
     status = Keyword.get(opts, :status)
     user_id = Keyword.get(opts, :user_id)
+    search = Keyword.get(opts, :search) |> normalize_search()
 
     AccessRequest
+    |> maybe_search_requests(search)
     |> order_by(desc: :inserted_at)
     |> maybe_filter_requests_by_user(user_id)
     |> maybe_filter_requests(status)
     |> preload([:user, :application, :reviewed_by])
     |> Repo.all()
+  end
+
+  defp normalize_search(nil), do: nil
+
+  defp normalize_search(term) when is_binary(term) do
+    t =
+      term
+      |> String.trim()
+      |> String.replace(~r/[%_\\]/, "")
+
+    if t == "", do: nil, else: t
+  end
+
+  defp maybe_search_requests(query, nil), do: query
+
+  defp maybe_search_requests(query, term) when is_binary(term) do
+    pattern = "%#{term}%"
+
+    query
+    |> join(:inner, [r], u in assoc(r, :user))
+    |> join(:inner, [r, u], a in assoc(r, :application))
+    |> where(
+      [r, u, a],
+      ilike(u.email, ^pattern) or
+        ilike(a.slug, ^pattern) or
+        ilike(a.name, ^pattern) or
+        ilike(fragment("CAST(? AS TEXT)", r.id), ^pattern)
+    )
   end
 
   defp maybe_filter_requests_by_user(query, nil), do: query
