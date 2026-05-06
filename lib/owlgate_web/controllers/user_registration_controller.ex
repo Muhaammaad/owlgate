@@ -21,7 +21,7 @@ defmodule OwlGateWeb.UserRegistrationController do
       {:ok, user} ->
         conn
         |> put_session(@session_key, user.id)
-        |> put_flash(:info, "Account created. You are signed in.")
+        |> put_flash(:info, gettext("Account created. You are signed in."))
         |> redirect(to: redirect_path_for(user))
 
       {:error, %Ecto.Changeset{} = cs} ->
@@ -38,7 +38,7 @@ defmodule OwlGateWeb.UserRegistrationController do
 
   def create(conn, _params) do
     conn
-    |> put_flash(:error, "Invalid form submission.")
+    |> put_flash(:error, gettext("Invalid form submission."))
     |> redirect(to: ~p"/register")
   end
 

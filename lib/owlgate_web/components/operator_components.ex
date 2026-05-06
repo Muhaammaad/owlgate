@@ -2,6 +2,7 @@ defmodule OwlGateWeb.OperatorComponents do
   @moduledoc "Shared layout chrome for operator LiveViews (headers, nav links, shells)."
 
   use Phoenix.Component
+  use Gettext, backend: OwlGateWeb.Gettext
 
   use Phoenix.VerifiedRoutes,
     endpoint: OwlGateWeb.Endpoint,
@@ -59,17 +60,17 @@ defmodule OwlGateWeb.OperatorComponents do
       class="rounded-box border border-base-300 p-4 flex flex-wrap gap-4 items-end"
     >
       <label class="form-control">
-        <span class="label-text text-xs">Action (exact)</span>
+        <span class="label-text text-xs">{gettext("Action (exact)")}</span>
         <input
           type="text"
           name="action"
           value={@filter_action}
-          placeholder="e.g. access_request.approved"
+          placeholder={gettext("e.g. access_request.approved")}
           class="input input-bordered input-sm w-64 max-w-full"
         />
       </label>
       <label class="form-control">
-        <span class="label-text text-xs">Entity type</span>
+        <span class="label-text text-xs">{gettext("Entity type")}</span>
         <select name="entity_type" class="select select-bordered select-sm w-56">
           <%= for {val, label} <- @entity_options do %>
             <option value={val} selected={@filter_entity == val}>{label}</option>
@@ -88,16 +89,18 @@ defmodule OwlGateWeb.OperatorComponents do
       <table class="table table-xs sm:table-sm table-zebra">
         <thead>
           <tr>
-            <th>When</th>
-            <th>Actor</th>
-            <th>Action</th>
-            <th>Entity</th>
-            <th>Meta</th>
+            <th>{gettext("When")}</th>
+            <th>{gettext("Actor")}</th>
+            <th>{gettext("Action")}</th>
+            <th>{gettext("Entity")}</th>
+            <th>{gettext("Meta")}</th>
           </tr>
         </thead>
         <tbody>
           <tr :if={@events == []}>
-            <td colspan="5" class="text-center text-base-content/70">No matching events.</td>
+            <td colspan="5" class="text-center text-base-content/70">
+              {gettext("No matching events.")}
+            </td>
           </tr>
           <%= for e <- @events do %>
             <tr>
@@ -131,16 +134,18 @@ defmodule OwlGateWeb.OperatorComponents do
         <thead>
           <tr>
             <th>ID</th>
-            <th>Requester</th>
-            <th>Application</th>
-            <th>Status</th>
-            <th>Reviewer</th>
+            <th>{gettext("Requester")}</th>
+            <th>{gettext("Application")}</th>
+            <th>{gettext("Status")}</th>
+            <th>{gettext("Reviewer")}</th>
             <th></th>
           </tr>
         </thead>
         <tbody>
           <tr :if={@requests == []}>
-            <td colspan="6" class="text-center text-base-content/70">No matching requests.</td>
+            <td colspan="6" class="text-center text-base-content/70">
+              {gettext("No matching requests.")}
+            </td>
           </tr>
           <%= for r <- @requests do %>
             <tr>
@@ -148,7 +153,7 @@ defmodule OwlGateWeb.OperatorComponents do
               <td>{r.user.email}</td>
               <td>{r.application.slug}</td>
               <td>
-                <span class="badge badge-ghost">{r.status}</span>
+                <span class="badge badge-ghost">{display_request_status(r)}</span>
               </td>
               <td class="text-sm">
                 <%= if r.reviewed_by do %>
@@ -162,7 +167,7 @@ defmodule OwlGateWeb.OperatorComponents do
               </td>
               <td>
                 <.link navigate={~p"/access-requests/#{r.id}"} class="link link-primary text-sm">
-                  Open
+                  {gettext("Open")}
                 </.link>
               </td>
             </tr>
@@ -183,23 +188,25 @@ defmodule OwlGateWeb.OperatorComponents do
         <thead>
           <tr>
             <th>ID</th>
-            <th>User</th>
-            <th>Application</th>
-            <th>Status</th>
-            <th>External ref</th>
+            <th>{gettext("User")}</th>
+            <th>{gettext("Application")}</th>
+            <th>{gettext("Status")}</th>
+            <th>{gettext("External ref")}</th>
             <th></th>
           </tr>
         </thead>
         <tbody>
           <tr :if={@grants == []}>
-            <td colspan="6" class="text-center text-base-content/70">No matching grants.</td>
+            <td colspan="6" class="text-center text-base-content/70">
+              {gettext("No matching grants.")}
+            </td>
           </tr>
           <%= for g <- @grants do %>
             <tr>
               <td class="font-mono">{g.id}</td>
               <td>{g.user.email}</td>
               <td>{g.application.slug}</td>
-              <td><span class="badge badge-ghost">{g.status}</span></td>
+              <td><span class="badge badge-ghost">{status_label(g.status)}</span></td>
               <td class="font-mono text-xs max-w-[14rem] truncate">{g.external_ref || "—"}</td>
               <td>
                 <button
@@ -209,7 +216,7 @@ defmodule OwlGateWeb.OperatorComponents do
                   phx-value-id={g.id}
                   class="btn btn-warning btn-xs"
                 >
-                  Queue revoke
+                  {gettext("Queue revoke")}
                 </button>
                 <span
                   :if={not @can_revoke? or g.status != :active}
@@ -218,7 +225,7 @@ defmodule OwlGateWeb.OperatorComponents do
                   <%= if g.status != :active do %>
                     —
                   <% else %>
-                    review role required
+                    {gettext("review role required")}
                   <% end %>
                 </span>
               </td>
@@ -238,12 +245,12 @@ defmodule OwlGateWeb.OperatorComponents do
     ~H"""
     <form id={@form_id}>
       <label class="form-control inline-flex flex-row gap-2 items-center">
-        <span class="text-sm whitespace-nowrap">Status</span>
+        <span class="text-sm whitespace-nowrap">{gettext("Status")}</span>
         <select name="status" phx-change="filter" class="select select-bordered select-sm">
-          <option value="">Any</option>
+          <option value="">{gettext("Any")}</option>
           <%= for s <- @statuses do %>
             <option value={Atom.to_string(s)} selected={@filter_status == s}>
-              {Atom.to_string(s)}
+              {status_label(s)}
             </option>
           <% end %>
         </select>
@@ -262,27 +269,27 @@ defmodule OwlGateWeb.OperatorComponents do
   def new_access_request_form(assigns) do
     ~H"""
     <section class="rounded-box border border-base-300 p-4 bg-base-200/30">
-      <h2 class="font-medium mb-3">New request</h2>
+      <h2 class="font-medium mb-3">{gettext("New request")}</h2>
       <%= if @applications == [] do %>
         <p class="text-sm text-base-content/70">
-          No applications exist yet — seed or create apps before submitting requests.
+          {gettext("No applications exist yet - seed or create apps before submitting requests.")}
         </p>
       <% else %>
         <form id="access-request-create" phx-submit="create" class="grid gap-3 max-w-xl">
           <label :if={@subject_user_picker?} class="form-control">
-            <span class="label-text text-sm">Access for user</span>
+            <span class="label-text text-sm">{gettext("Access for user")}</span>
             <select name="subject_user_id" class="select select-bordered w-full" required>
-              <option value="">Select user…</option>
+              <option value="">{gettext("Select user...")}</option>
               <%= for u <- @subject_users do %>
                 <option value={u.id}>{u.name} ({u.email})</option>
               <% end %>
             </select>
             <span class="label-text-alt text-xs text-base-content/60">
-              Request is created for this person; you stay the actor in the audit log.
+              {gettext("Request is created for this person; you stay the actor in the audit log.")}
             </span>
           </label>
           <label class="form-control">
-            <span class="label-text text-sm">Application</span>
+            <span class="label-text text-sm">{gettext("Application")}</span>
             <select name="application_id" class="select select-bordered w-full">
               <%= for app <- @applications do %>
                 <option value={app.id}>{app.name} ({app.slug})</option>
@@ -290,24 +297,29 @@ defmodule OwlGateWeb.OperatorComponents do
             </select>
           </label>
           <label class="form-control">
-            <span class="label-text text-sm">Reason (min 5 characters)</span>
+            <span class="label-text text-sm">{gettext("Reason (min 5 characters)")}</span>
             <textarea
               name="reason"
               class="textarea textarea-bordered w-full min-h-24"
-              placeholder="Explain why access is needed"
+              placeholder={gettext("Explain why access is needed")}
               required
             />
           </label>
           <label :if={@admin_submit_flow?} class="form-control">
-            <span class="label-text text-sm">After submit</span>
+            <span class="label-text text-sm">{gettext("After submit")}</span>
             <select name="admin_submit_flow" class="select select-bordered w-full">
-              <option value="pending_review" selected>Leave pending — normal review queue</option>
+              <option value="pending_review" selected>
+                {gettext("Leave pending - normal review queue")}
+              </option>
               <option value="approve_immediately">
-                Approve now — queue provisioning (same as review action)
+                {gettext("Approve now - queue provisioning (same as review action)")}
               </option>
             </select>
             <span class="label-text-alt text-xs text-base-content/60 leading-snug pt-1">
-              Requests are always inserted as <span class="font-medium">pending</span>. “Approve now” runs the standard approval operation next so audit entries stay consistent — not a free-form status assignment.
+              {gettext("Requests are always inserted as")}
+              <span class="font-medium">{gettext("pending")}</span>. {gettext(
+                "Approve now runs the standard approval operation next so audit entries stay consistent - not a free-form status assignment."
+              )}
             </span>
           </label>
           <%= if @form_error do %>
@@ -318,7 +330,7 @@ defmodule OwlGateWeb.OperatorComponents do
             disabled={not @submit_enabled?}
             class="btn btn-primary btn-sm disabled:opacity-50"
           >
-            Submit request
+            {gettext("Submit request")}
           </button>
         </form>
       <% end %>
@@ -332,7 +344,7 @@ defmodule OwlGateWeb.OperatorComponents do
     ~H"""
     <div class="flex gap-4 flex-wrap items-center justify-between">
       <div>
-        <p class="text-sm text-base-content/70 mb-1">Access request {@request.id}</p>
+        <p class="text-sm text-base-content/70 mb-1">{gettext("Access request")} {@request.id}</p>
         <h1 class="text-2xl font-semibold">{@request.application.slug}</h1>
         <p class="mt-2 text-base-content/80">{@request.reason}</p>
       </div>
@@ -347,11 +359,11 @@ defmodule OwlGateWeb.OperatorComponents do
     ~H"""
     <dl class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
       <div>
-        <dt class="text-base-content/60">Requester</dt>
+        <dt class="text-base-content/60">{gettext("Requester")}</dt>
         <dd class="font-medium">{@request.user.email}</dd>
       </div>
       <div>
-        <dt class="text-base-content/60">Application</dt>
+        <dt class="text-base-content/60">{gettext("Application")}</dt>
         <dd class="font-medium">{@request.application.name}</dd>
       </div>
       <div>
@@ -380,15 +392,15 @@ defmodule OwlGateWeb.OperatorComponents do
       <h2 class="font-medium">Grant</h2>
       <dl class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
         <div>
-          <dt class="text-base-content/60">Grant ID</dt>
+          <dt class="text-base-content/60">{gettext("Grant ID")}</dt>
           <dd class="font-mono font-medium">{@grant.id}</dd>
         </div>
         <div>
-          <dt class="text-base-content/60">Grant status</dt>
+          <dt class="text-base-content/60">{gettext("Grant status")}</dt>
           <dd><span class="badge badge-ghost">{@grant.status}</span></dd>
         </div>
         <div class="sm:col-span-2">
-          <dt class="text-base-content/60">External ref</dt>
+          <dt class="text-base-content/60">{gettext("External ref")}</dt>
           <dd class="font-mono text-xs break-all">{@grant.external_ref || "—"}</dd>
         </div>
       </dl>
@@ -404,23 +416,26 @@ defmodule OwlGateWeb.OperatorComponents do
             phx-value-id={@grant.id}
             class="btn btn-warning btn-sm"
           >
-            Queue revoke
+            {gettext("Queue revoke")}
           </button>
           <.link navigate={~p"/grants"} class="btn btn-outline btn-sm">
-            Open grants list
+            {gettext("Open grants list")}
           </.link>
           <p class="text-xs text-base-content/60 sm:w-full">
-            Revoke removes access for the requester on this application (same workflow as Grants).
+            {gettext(
+              "Revoke removes access for the requester on this application (same workflow as Grants)."
+            )}
           </p>
         </div>
         <p :if={not @show_admin_revoke?} class="text-xs text-base-content/60">
-          Admins can queue a revoke from here; reviewers can use the Grants page.
+          {gettext("Admins can queue a revoke from here; reviewers can use the Grants page.")}
         </p>
       </div>
 
       <p :if={@grant.status != :active} class="text-sm text-base-content/70">
-        Grant status is <span class="font-medium">{@grant.status}</span>
-        — revoke only applies while the grant is active.
+        {gettext("Grant status is")}
+        <span class="font-medium">{status_label(@grant.status)}</span>
+        - {gettext("revoke only applies while the grant is active.")}
       </p>
     </section>
     """
@@ -434,7 +449,7 @@ defmodule OwlGateWeb.OperatorComponents do
       :if={@request.status == :denied and @request.denial_reason}
       class="rounded-box border border-warning/40 bg-warning/10 p-3 text-sm"
     >
-      <strong>Denial reason:</strong>
+      <strong>{gettext("Denial reason:")}</strong>
       <span class="ml-2">{@request.denial_reason}</span>
     </div>
     """
@@ -451,14 +466,14 @@ defmodule OwlGateWeb.OperatorComponents do
       <h2 class="font-medium">Review</h2>
       <div class="flex gap-3 flex-wrap">
         <button type="button" phx-click="approve" class="btn btn-success btn-sm">
-          Approve &amp; queue provisioning
+          {gettext("Approve and queue provisioning")}
         </button>
       </div>
 
       <div>
         <form id="deny-request" phx-submit="deny" class="grid gap-2 max-w-lg">
           <label class="form-control">
-            <span class="label-text text-sm">Denial reason</span>
+            <span class="label-text text-sm">{gettext("Denial reason")}</span>
             <textarea
               name="reason"
               required
@@ -467,7 +482,7 @@ defmodule OwlGateWeb.OperatorComponents do
             />
           </label>
           <button type="submit" class="btn btn-error btn-sm w-fit">
-            Deny request
+            {gettext("Deny request")}
           </button>
         </form>
       </div>
@@ -481,7 +496,7 @@ defmodule OwlGateWeb.OperatorComponents do
   def dashboard_snapshot_cards(assigns) do
     ~H"""
     <section>
-      <h2 class="font-medium mb-3">Access requests</h2>
+      <h2 class="font-medium mb-3">{gettext("Access requests")}</h2>
       <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
         <div
           :for={{status, count} <- @request_rows}
@@ -494,7 +509,7 @@ defmodule OwlGateWeb.OperatorComponents do
     </section>
 
     <section>
-      <h2 class="font-medium mb-3">Grants</h2>
+      <h2 class="font-medium mb-3">{gettext("Grants")}</h2>
       <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
         <div
           :for={{status, count} <- @grant_rows}
@@ -508,12 +523,18 @@ defmodule OwlGateWeb.OperatorComponents do
     """
   end
 
-  defp request_reviewer_label(%{status: :denied}), do: "Denied by"
-  defp request_reviewer_label(%{status: :pending}), do: "Reviewer"
-  defp request_reviewer_label(_), do: "Approved by"
+  defp request_reviewer_label(%{status: :denied}), do: gettext("Denied by")
+  defp request_reviewer_label(%{status: :pending}), do: gettext("Reviewer")
+  defp request_reviewer_label(_), do: gettext("Approved by")
 
-  defp reviewer_action_hint(:denied), do: "denied"
-  defp reviewer_action_hint(_), do: "approved"
+  defp reviewer_action_hint(:denied), do: gettext("denied")
+  defp reviewer_action_hint(_), do: gettext("approved")
+
+  defp display_request_status(%{grant: %{status: status}}) when not is_nil(status) do
+    status_label(status)
+  end
+
+  defp display_request_status(%{status: status}), do: status_label(status)
 
   defp format_occurred_at(nil), do: "—"
 
@@ -530,5 +551,14 @@ defmodule OwlGateWeb.OperatorComponents do
   defp format_entity_ref(type, id) when is_atom(type),
     do: Atom.to_string(type) <> "##{id}"
 
+  defp status_label(:pending), do: gettext("pending")
+  defp status_label(:approved), do: gettext("approved")
+  defp status_label(:denied), do: gettext("denied")
+  defp status_label(:provisioning), do: gettext("provisioning")
+  defp status_label(:provisioned), do: gettext("provisioned")
+  defp status_label(:failed), do: gettext("failed")
+  defp status_label(:active), do: gettext("active")
+  defp status_label(:revoking), do: gettext("revoking")
+  defp status_label(:revoked), do: gettext("revoked")
   defp status_label(atom) when is_atom(atom), do: Atom.to_string(atom)
 end

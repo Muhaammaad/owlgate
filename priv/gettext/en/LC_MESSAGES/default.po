@@ -1,0 +1,1144 @@
+## "msgid"s in this file come from POT (.pot) files.
+###
+### Do not add, change, or remove "msgid"s manually here as
+### they're tied to the ones in the corresponding POT file
+### (with the same domain).
+###
+### Use "mix gettext.extract --merge" or "mix gettext.merge"
+### to merge POT files into PO files.
+msgid ""
+msgstr ""
+"Language: en\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: lib/owlgate_web/controllers/user_session_html/new.html.heex:21
+#, elixir-autogen, elixir-format
+msgid ")"
+msgstr ""
+
+#: lib/owlgate_web/live/access_request_live/show.ex:193
+#, elixir-autogen, elixir-format
+msgid "A denial reason is required."
+msgstr ""
+
+#: lib/owlgate_web/controllers/page_html/home.html.heex:32
+#, elixir-autogen, elixir-format
+msgid "Access governance demo"
+msgstr ""
+
+#: lib/owlgate_web/live/grant_live/index.ex:100
+#, elixir-autogen, elixir-format
+msgid "Access grants"
+msgstr ""
+
+#: lib/owlgate_web/live/access_request_live/show.ex:20
+#, elixir-autogen, elixir-format
+msgid "Access request not found."
+msgstr ""
+
+#: lib/owlgate_web/live/access_request_live/index.ex:96
+#, elixir-autogen, elixir-format
+msgid "Access request submitted as pending."
+msgstr ""
+
+#: lib/owlgate_web/live/access_request_live/index.ex:100
+#, elixir-autogen, elixir-format
+msgid "Access request submitted."
+msgstr ""
+
+#: lib/owlgate_web/components/operator_components.ex:480
+#: lib/owlgate_web/controllers/page_html/home.html.heex:47
+#: lib/owlgate_web/live/access_request_live/index.ex:204
+#, elixir-autogen, elixir-format
+msgid "Access requests"
+msgstr ""
+
+#: lib/owlgate_web/controllers/user_registration_controller.ex:24
+#, elixir-autogen, elixir-format
+msgid "Account created. You are signed in."
+msgstr ""
+
+#: lib/owlgate_web/components/core_components.ex:368
+#, elixir-autogen, elixir-format
+msgid "Actions"
+msgstr ""
+
+#: lib/owlgate_web/live/admin/application_live/form.ex:157
+#: lib/owlgate_web/live/admin/application_live/index.ex:77
+#, elixir-autogen, elixir-format
+msgid "Active"
+msgstr ""
+
+#: lib/owlgate_web/live/grant_live/index.ex:124
+#, elixir-autogen, elixir-format
+msgid "Active provisioning outcomes across all users. Managers and admins can queue revokes on active grants."
+msgstr ""
+
+#: lib/owlgate_web/controllers/user_registration_html/new.html.heex:62
+#: lib/owlgate_web/controllers/user_session_html/new.html.heex:25
+#, elixir-autogen, elixir-format
+msgid "Admin"
+msgstr ""
+
+#: lib/owlgate_web/live/auth.ex:50
+#, elixir-autogen, elixir-format
+msgid "Admins only."
+msgstr ""
+
+#: lib/owlgate_web/live/access_request_live/index.ex:265
+#, elixir-autogen, elixir-format
+msgid "All requests"
+msgstr ""
+
+#: lib/owlgate_web/live/access_request_live/index.ex:136
+#, elixir-autogen, elixir-format
+msgid "An open access request already exists for this user and application."
+msgstr ""
+
+#: lib/owlgate_web/live/admin/application_live/index.ex:25
+#, elixir-autogen, elixir-format
+msgid "Application deleted."
+msgstr ""
+
+#: lib/owlgate_web/live/admin/application_live/form.ex:40
+#: lib/owlgate_web/live/admin/application_live/index.ex:18
+#, elixir-autogen, elixir-format
+msgid "Application not found."
+msgstr ""
+
+#: lib/owlgate_web/components/layouts.ex:53
+#: lib/owlgate_web/components/layouts.ex:94
+#: lib/owlgate_web/controllers/page_html/home.html.heex:54
+#: lib/owlgate_web/live/admin/application_live/index.ex:59
+#, elixir-autogen, elixir-format
+msgid "Apps"
+msgstr ""
+
+#: lib/owlgate_web/components/layouts.ex:178
+#: lib/owlgate_web/components/layouts.ex:190
+#, elixir-autogen, elixir-format
+msgid "Attempting to reconnect"
+msgstr ""
+
+#: lib/owlgate_web/live/access_request_live/index.ex:115
+#, elixir-autogen, elixir-format
+msgid "Auto-approve was not allowed for this request."
+msgstr ""
+
+#: lib/owlgate_web/live/access_request_live/show.ex:225
+#, elixir-autogen, elixir-format
+msgid "Back to list"
+msgstr ""
+
+#: lib/owlgate_web/live/admin/application_live/index.ex:33
+#, elixir-autogen, elixir-format
+msgid "Cannot delete (%{reason}). Remove requests/grants first."
+msgstr ""
+
+#: lib/owlgate_web/live/admin/user_live/index.ex:33
+#, elixir-autogen, elixir-format
+msgid "Cannot delete user (%{reason})."
+msgstr ""
+
+#: lib/owlgate_web/live/access_request_live/index.ex:141
+#, elixir-autogen, elixir-format
+msgid "Choose which user the access is for."
+msgstr ""
+
+#: lib/owlgate_web/controllers/user_registration_html/new.html.heex:12
+#, elixir-autogen, elixir-format
+msgid "Choose your role during signup. Password must be at least 8 characters."
+msgstr ""
+
+#: lib/owlgate_web/live/access_request_live/index.ex:127
+#, elixir-autogen, elixir-format
+msgid "Could not approve - high-risk apps require the application owner or an admin."
+msgstr ""
+
+#: lib/owlgate_web/live/access_request_live/index.ex:118
+#, elixir-autogen, elixir-format
+msgid "Could not approve - request was not in a pending state."
+msgstr ""
+
+#: lib/owlgate_web/live/access_request_live/index.ex:122
+#, elixir-autogen, elixir-format
+msgid "Could not approve - you cannot approve your own request when you are the requester."
+msgstr ""
+
+#: lib/owlgate_web/live/access_request_live/index.ex:130
+#, elixir-autogen, elixir-format
+msgid "Could not auto-approve: %{reason}"
+msgstr ""
+
+#: lib/owlgate_web/live/access_request_live/index.ex:258
+#, elixir-autogen, elixir-format
+msgid "Create a request as %{name} or open a row to review approvals."
+msgstr ""
+
+#: lib/owlgate_web/controllers/page_html/home.html.heex:60
+#: lib/owlgate_web/controllers/user_registration_html/new.html.heex:6
+#: lib/owlgate_web/controllers/user_session_html/new.html.heex:92
+#, elixir-autogen, elixir-format
+msgid "Create account"
+msgstr ""
+
+#: lib/owlgate_web/live/admin/user_live/index.ex:57
+#, elixir-autogen, elixir-format
+msgid "Create accounts and assign roles (admins only)."
+msgstr ""
+
+#: lib/owlgate_web/components/layouts.ex:31
+#: lib/owlgate_web/components/layouts.ex:80
+#: lib/owlgate_web/controllers/page_html/home.html.heex:44
+#, elixir-autogen, elixir-format
+msgid "Dashboard"
+msgstr ""
+
+#: lib/owlgate_web/live/admin/application_live/index.ex:60
+#, elixir-autogen, elixir-format
+msgid "Define apps employees can request access to."
+msgstr ""
+
+#: lib/owlgate_web/live/admin/application_live/index.ex:111
+#: lib/owlgate_web/live/admin/user_live/index.ex:104
+#, elixir-autogen, elixir-format
+msgid "Delete"
+msgstr ""
+
+#: lib/owlgate_web/live/admin/application_live/index.ex:105
+#, elixir-autogen, elixir-format
+msgid "Delete this application? Fails if access requests or grants still reference it."
+msgstr ""
+
+#: lib/owlgate_web/live/admin/user_live/index.ex:98
+#, elixir-autogen, elixir-format
+msgid "Delete this user? This fails if they still own apps or have related records."
+msgstr ""
+
+#: lib/owlgate_web/controllers/user_session_html/new.html.heex:19
+#, elixir-autogen, elixir-format
+msgid "Demo accounts (password"
+msgstr ""
+
+#: lib/owlgate_web/live/admin/application_live/index.ex:98
+#: lib/owlgate_web/live/admin/user_live/index.ex:91
+#, elixir-autogen, elixir-format
+msgid "Edit"
+msgstr ""
+
+#: lib/owlgate_web/controllers/user_registration_html/new.html.heex:23
+#: lib/owlgate_web/controllers/user_session_html/new.html.heex:55
+#: lib/owlgate_web/live/admin/user_live/form.ex:119
+#: lib/owlgate_web/live/admin/user_live/index.ex:70
+#, elixir-autogen, elixir-format
+msgid "Email"
+msgstr ""
+
+#: lib/owlgate_web/controllers/user_session_controller.ex:41
+#, elixir-autogen, elixir-format
+msgid "Email and password are required."
+msgstr ""
+
+#: lib/owlgate_web/controllers/user_registration_html/new.html.heex:60
+#: lib/owlgate_web/controllers/user_session_html/new.html.heex:33
+#, elixir-autogen, elixir-format
+msgid "Employee"
+msgstr ""
+
+#: lib/owlgate_web/controllers/user_session_html/new.html.heex:79
+#, elixir-autogen, elixir-format
+msgid "Enter your password"
+msgstr ""
+
+#: lib/owlgate_web/live/grant_live/index.ex:107
+#, elixir-autogen, elixir-format
+msgid "Filter"
+msgstr ""
+
+#: lib/owlgate_web/live/access_request_live/show.ex:129
+#: lib/owlgate_web/live/grant_live/index.ex:59
+#, elixir-autogen, elixir-format
+msgid "Grant is not active."
+msgstr ""
+
+#: lib/owlgate_web/live/access_request_live/show.ex:123
+#: lib/owlgate_web/live/grant_live/index.ex:53
+#, elixir-autogen, elixir-format
+msgid "Grant not found."
+msgstr ""
+
+#: lib/owlgate_web/live/access_request_live/show.ex:167
+#, elixir-autogen, elixir-format
+msgid "High-risk applications require the app owner or an admin."
+msgstr ""
+
+#: lib/owlgate_web/controllers/user_registration_html/new.html.heex:70
+#: lib/owlgate_web/controllers/user_session_html/new.html.heex:90
+#, elixir-autogen, elixir-format
+msgid "Home"
+msgstr ""
+
+#: lib/owlgate_web/controllers/user_session_controller.ex:34
+#, elixir-autogen, elixir-format
+msgid "Invalid email or password."
+msgstr ""
+
+#: lib/owlgate_web/controllers/user_registration_controller.ex:41
+#, elixir-autogen, elixir-format
+msgid "Invalid form submission."
+msgstr ""
+
+#: lib/owlgate_web/live/access_request_live/show.ex:116
+#: lib/owlgate_web/live/grant_live/index.ex:50
+#, elixir-autogen, elixir-format
+msgid "Invalid grant id."
+msgstr ""
+
+#: lib/owlgate_web/live/admin/application_live/index.ex:42
+#: lib/owlgate_web/live/admin/user_live/index.ex:39
+#, elixir-autogen, elixir-format
+msgid "Invalid id."
+msgstr ""
+
+#: lib/owlgate_web/live/access_request_live/show.ex:27
+#, elixir-autogen, elixir-format
+msgid "Invalid request id."
+msgstr ""
+
+#: lib/owlgate_web/live/admin/application_live/index.ex:78
+#: lib/owlgate_web/live/admin/user_live/index.ex:74
+#, elixir-autogen, elixir-format
+msgid "MFA"
+msgstr ""
+
+#: lib/owlgate_web/controllers/user_registration_html/new.html.heex:61
+#: lib/owlgate_web/controllers/user_session_html/new.html.heex:29
+#: lib/owlgate_web/live/admin/user_live/index.ex:73
+#, elixir-autogen, elixir-format
+msgid "Manager"
+msgstr ""
+
+#: lib/owlgate_web/live/access_request_live/index.ex:264
+#, elixir-autogen, elixir-format
+msgid "My requests"
+msgstr ""
+
+#: lib/owlgate_web/controllers/user_registration_html/new.html.heex:35
+#: lib/owlgate_web/live/admin/application_live/form.ex:122
+#: lib/owlgate_web/live/admin/application_live/index.ex:73
+#: lib/owlgate_web/live/admin/user_live/form.ex:120
+#: lib/owlgate_web/live/admin/user_live/index.ex:71
+#, elixir-autogen, elixir-format
+msgid "Name"
+msgstr ""
+
+#: lib/owlgate_web/live/admin/application_live/form.ex:30
+#: lib/owlgate_web/live/admin/application_live/index.ex:64
+#, elixir-autogen, elixir-format
+msgid "New application"
+msgstr ""
+
+#: lib/owlgate_web/controllers/page_html/home.html.heex:84
+#, elixir-autogen, elixir-format
+msgid "New registrations can select role (employee, manager, admin) on the register form."
+msgstr ""
+
+#: lib/owlgate_web/live/admin/user_live/form.ex:24
+#: lib/owlgate_web/live/admin/user_live/index.ex:61
+#, elixir-autogen, elixir-format
+msgid "New user"
+msgstr ""
+
+#: lib/owlgate_web/live/admin/application_live/index.ex:85
+#, elixir-autogen, elixir-format
+msgid "No applications."
+msgstr ""
+
+#: lib/owlgate_web/live/admin/user_live/index.ex:80
+#, elixir-autogen, elixir-format
+msgid "No users."
+msgstr ""
+
+#: lib/owlgate_web/live/access_request_live/show.ex:101
+#, elixir-autogen, elixir-format
+msgid "Only admins can queue revoke from this page."
+msgstr ""
+
+#: lib/owlgate_web/controllers/page_html/home.html.heex:69
+#, elixir-autogen, elixir-format
+msgid "Open Dashboard or Requests above."
+msgstr ""
+
+#: lib/owlgate_web/controllers/page_html/home.html.heex:29
+#, elixir-autogen, elixir-format
+msgid "OwlGate"
+msgstr ""
+
+#: lib/owlgate_web/live/admin/application_live/form.ex:137
+#: lib/owlgate_web/live/admin/application_live/index.ex:76
+#, elixir-autogen, elixir-format
+msgid "Owner"
+msgstr ""
+
+#: lib/owlgate_web/controllers/user_registration_html/new.html.heex:47
+#: lib/owlgate_web/controllers/user_session_html/new.html.heex:72
+#: lib/owlgate_web/live/admin/user_live/form.ex:171
+#, elixir-autogen, elixir-format
+msgid "Password"
+msgstr ""
+
+#: lib/owlgate_web/controllers/user_session_controller.ex:28
+#, elixir-autogen, elixir-format
+msgid "Password not set for this account. Ask an admin to set one."
+msgstr ""
+
+#: lib/owlgate_web/live/access_request_live/show.ex:197
+#, elixir-autogen, elixir-format
+msgid "Provide a clear denial reason (min 3 characters)."
+msgstr ""
+
+#: lib/owlgate_web/controllers/page_html/home.html.heex:20
+#: lib/owlgate_web/controllers/user_registration_html/new.html.heex:66
+#, elixir-autogen, elixir-format
+msgid "Register"
+msgstr ""
+
+#: lib/owlgate_web/live/access_request_live/show.ex:144
+#, elixir-autogen, elixir-format
+msgid "Request approved - provisioning queued."
+msgstr ""
+
+#: lib/owlgate_web/live/access_request_live/index.ex:91
+#, elixir-autogen, elixir-format
+msgid "Request created and approved; provisioning queued."
+msgstr ""
+
+#: lib/owlgate_web/live/access_request_live/show.ex:181
+#, elixir-autogen, elixir-format
+msgid "Request denied."
+msgstr ""
+
+#: lib/owlgate_web/controllers/page_html/home.html.heex:35
+#, elixir-autogen, elixir-format
+msgid "Request, approve, provision, and revoke application access with policy checks, audit events, and async connector jobs. Sign in to use the operator UI."
+msgstr ""
+
+#: lib/owlgate_web/live/access_request_live/index.ex:227
+#, elixir-autogen, elixir-format
+msgid "Requester email..."
+msgstr ""
+
+#: lib/owlgate_web/live/access_request_live/show.ex:113
+#: lib/owlgate_web/live/grant_live/index.ex:43
+#, elixir-autogen, elixir-format
+msgid "Revoke job queued."
+msgstr ""
+
+#: lib/owlgate_web/live/admin/application_live/index.ex:75
+#, elixir-autogen, elixir-format
+msgid "Risk"
+msgstr ""
+
+#: lib/owlgate_web/controllers/user_registration_html/new.html.heex:58
+#: lib/owlgate_web/live/admin/user_live/form.ex:123
+#: lib/owlgate_web/live/admin/user_live/index.ex:72
+#, elixir-autogen, elixir-format
+msgid "Role"
+msgstr ""
+
+#: lib/owlgate_web/controllers/page_html/home.html.heex:92
+#: lib/owlgate_web/controllers/user_session_html/new.html.heex:12
+#, elixir-autogen, elixir-format
+msgid "Run"
+msgstr ""
+
+#: lib/owlgate_web/live/access_request_live/index.ex:222
+#, elixir-autogen, elixir-format
+msgid "Search"
+msgstr ""
+
+#: lib/owlgate_web/controllers/page_html/home.html.heex:17
+#: lib/owlgate_web/controllers/page_html/home.html.heex:58
+#: lib/owlgate_web/controllers/user_registration_html/new.html.heex:71
+#: lib/owlgate_web/controllers/user_session_html/new.html.heex:6
+#: lib/owlgate_web/controllers/user_session_html/new.html.heex:86
+#, elixir-autogen, elixir-format
+msgid "Sign in"
+msgstr ""
+
+#: lib/owlgate_web/live/auth.ex:28
+#: lib/owlgate_web/live/auth.ex:41
+#, elixir-autogen, elixir-format
+msgid "Sign in to continue."
+msgstr ""
+
+#: lib/owlgate_web/components/layouts.ex:62
+#: lib/owlgate_web/components/layouts.ex:107
+#: lib/owlgate_web/controllers/page_html/home.html.heex:13
+#, elixir-autogen, elixir-format
+msgid "Sign out"
+msgstr ""
+
+#: lib/owlgate_web/controllers/page_html/home.html.heex:67
+#, elixir-autogen, elixir-format
+msgid "Signed in as"
+msgstr ""
+
+#: lib/owlgate_web/controllers/user_session_controller.ex:49
+#, elixir-autogen, elixir-format
+msgid "Signed out."
+msgstr ""
+
+#: lib/owlgate_web/live/admin/application_live/form.ex:123
+#: lib/owlgate_web/live/admin/application_live/index.ex:74
+#, elixir-autogen, elixir-format
+msgid "Slug"
+msgstr ""
+
+#: lib/owlgate_web/components/layouts.ex:185
+#, elixir-autogen, elixir-format
+msgid "Something went wrong!"
+msgstr ""
+
+#: lib/owlgate_web/live/access_request_live/index.ex:256
+#, elixir-autogen, elixir-format
+msgid "Submit access you need, or open one of your requests below."
+msgstr ""
+
+#: lib/owlgate_web/live/access_request_live/index.ex:248
+#, elixir-autogen, elixir-format
+msgid "Submit on behalf of someone (use Access for user below), or open any row to review. Signed in as %{name}."
+msgstr ""
+
+#: lib/owlgate_web/live/access_request_live/index.ex:133
+#, elixir-autogen, elixir-format
+msgid "That application is inactive."
+msgstr ""
+
+#: lib/owlgate_web/live/access_request_live/show.ex:120
+#, elixir-autogen, elixir-format
+msgid "That grant is not linked to this request."
+msgstr ""
+
+#: lib/owlgate_web/live/access_request_live/index.ex:142
+#, elixir-autogen, elixir-format
+msgid "That user no longer exists."
+msgstr ""
+
+#: lib/owlgate_web/live/access_request_live/show.ex:155
+#, elixir-autogen, elixir-format
+msgid "This request cannot be approved in its current state."
+msgstr ""
+
+#: lib/owlgate_web/live/access_request_live/show.ex:189
+#, elixir-autogen, elixir-format
+msgid "This request cannot be denied in its current state."
+msgstr ""
+
+#: lib/owlgate_web/live/access_request_live/index.ex:139
+#, elixir-autogen, elixir-format
+msgid "This user already has active access for this application."
+msgstr ""
+
+#: lib/owlgate_web/live/access_request_live/show.ex:175
+#, elixir-autogen, elixir-format
+msgid "Unable to approve: %{reason}"
+msgstr ""
+
+#: lib/owlgate_web/live/access_request_live/index.ex:145
+#, elixir-autogen, elixir-format
+msgid "Unable to create request: %{reason}"
+msgstr ""
+
+#: lib/owlgate_web/live/access_request_live/show.ex:136
+#, elixir-autogen, elixir-format
+msgid "Unable to revoke: %{reason}"
+msgstr ""
+
+#: lib/owlgate_web/live/admin/user_live/index.ex:25
+#, elixir-autogen, elixir-format
+msgid "User deleted."
+msgstr ""
+
+#: lib/owlgate_web/live/admin/user_live/form.ex:34
+#: lib/owlgate_web/live/admin/user_live/index.ex:18
+#, elixir-autogen, elixir-format
+msgid "User not found."
+msgstr ""
+
+#: lib/owlgate_web/components/layouts.ex:48
+#: lib/owlgate_web/components/layouts.ex:91
+#: lib/owlgate_web/controllers/page_html/home.html.heex:51
+#: lib/owlgate_web/live/admin/user_live/index.ex:56
+#, elixir-autogen, elixir-format
+msgid "Users"
+msgstr ""
+
+#: lib/owlgate_web/components/layouts.ex:173
+#, elixir-autogen, elixir-format
+msgid "We can't find the internet"
+msgstr ""
+
+#: lib/owlgate_web/controllers/user_session_controller.ex:21
+#, elixir-autogen, elixir-format
+msgid "Welcome back."
+msgstr ""
+
+#: lib/owlgate_web/live/access_request_live/show.ex:160
+#, elixir-autogen, elixir-format
+msgid "You cannot approve your own request."
+msgstr ""
+
+#: lib/owlgate_web/live/access_request_live/index.ex:132
+#, elixir-autogen, elixir-format
+msgid "You cannot request access for this application."
+msgstr ""
+
+#: lib/owlgate_web/live/access_request_live/show.ex:148
+#: lib/owlgate_web/live/access_request_live/show.ex:185
+#, elixir-autogen, elixir-format
+msgid "You cannot review this request."
+msgstr ""
+
+#: lib/owlgate_web/live/grant_live/index.ex:56
+#, elixir-autogen, elixir-format
+msgid "You cannot revoke grants."
+msgstr ""
+
+#: lib/owlgate_web/live/access_request_live/show.ex:126
+#, elixir-autogen, elixir-format
+msgid "You cannot revoke this grant."
+msgstr ""
+
+#: lib/owlgate_web/live/grant_live/index.ex:122
+#, elixir-autogen, elixir-format
+msgid "Your provisioned access. Contact a manager if something looks wrong."
+msgstr ""
+
+#: lib/owlgate_web/controllers/page_html/home.html.heex:94
+#, elixir-autogen, elixir-format
+msgid "after migrate if you need demo users and the demo-portal application."
+msgstr ""
+
+#: lib/owlgate_web/controllers/user_session_html/new.html.heex:14
+#, elixir-autogen, elixir-format
+msgid "after migrate, or register if no accounts exist yet."
+msgstr ""
+
+#: lib/owlgate_web/components/core_components.ex:74
+#, elixir-autogen, elixir-format
+msgid "close"
+msgstr ""
+
+#: lib/owlgate_web/live/admin/application_live/index.ex:94
+#: lib/owlgate_web/live/admin/application_live/index.ex:95
+#: lib/owlgate_web/live/admin/user_live/index.ex:88
+#, elixir-autogen, elixir-format
+msgid "no"
+msgstr ""
+
+#: lib/owlgate_web/live/admin/application_live/index.ex:94
+#: lib/owlgate_web/live/admin/application_live/index.ex:95
+#: lib/owlgate_web/live/admin/user_live/index.ex:88
+#, elixir-autogen, elixir-format
+msgid "yes"
+msgstr ""
+
+#: lib/owlgate_web/controllers/user_session_html/new.html.heex:64
+#, elixir-autogen, elixir-format
+msgid "you@example.com"
+msgstr ""
+
+#: lib/owlgate_web/live/admin/user_live/index.ex:87
+#, elixir-autogen, elixir-format
+msgid "—"
+msgstr ""
+
+#: lib/owlgate_web/components/operator_components.ex:276
+#, elixir-autogen, elixir-format
+msgid "Access for user"
+msgstr ""
+
+#: lib/owlgate_web/components/operator_components.ex:344
+#: lib/owlgate_web/live/audit_live/index.ex:13
+#, elixir-autogen, elixir-format, fuzzy
+msgid "Access request"
+msgstr ""
+
+#: lib/owlgate_web/components/operator_components.ex:420
+#, elixir-autogen, elixir-format
+msgid "Admins can queue a revoke from here; reviewers can use the Grants page."
+msgstr ""
+
+#: lib/owlgate_web/components/operator_components.ex:305
+#, elixir-autogen, elixir-format
+msgid "After submit"
+msgstr ""
+
+#: lib/owlgate_web/components/operator_components.ex:138
+#: lib/owlgate_web/components/operator_components.ex:190
+#: lib/owlgate_web/components/operator_components.ex:288
+#: lib/owlgate_web/components/operator_components.ex:363
+#, elixir-autogen, elixir-format, fuzzy
+msgid "Application"
+msgstr ""
+
+#: lib/owlgate_web/components/operator_components.ex:311
+#, elixir-autogen, elixir-format
+msgid "Approve now - queue provisioning (same as review action)"
+msgstr ""
+
+#: lib/owlgate_web/components/operator_components.ex:317
+#, elixir-autogen, elixir-format
+msgid "Approve now runs the standard approval operation next so audit entries stay consistent - not a free-form status assignment."
+msgstr ""
+
+#: lib/owlgate_web/components/operator_components.ex:509
+#, elixir-autogen, elixir-format
+msgid "Approved by"
+msgstr ""
+
+#: lib/owlgate_web/components/layouts.ex:43
+#: lib/owlgate_web/components/layouts.ex:87
+#, elixir-autogen, elixir-format
+msgid "Audit"
+msgstr ""
+
+#: lib/owlgate_web/components/operator_components.ex:462
+#, elixir-autogen, elixir-format
+msgid "Denial reason"
+msgstr ""
+
+#: lib/owlgate_web/components/operator_components.ex:438
+#, elixir-autogen, elixir-format
+msgid "Denial reason:"
+msgstr ""
+
+#: lib/owlgate_web/components/operator_components.ex:507
+#, elixir-autogen, elixir-format
+msgid "Denied by"
+msgstr ""
+
+#: lib/owlgate_web/components/operator_components.ex:466
+#, elixir-autogen, elixir-format
+msgid "Deny request"
+msgstr ""
+
+#: lib/owlgate_web/components/operator_components.ex:300
+#, elixir-autogen, elixir-format
+msgid "Explain why access is needed"
+msgstr ""
+
+#: lib/owlgate_web/components/layouts.ex:40
+#: lib/owlgate_web/components/layouts.ex:85
+#: lib/owlgate_web/components/operator_components.ex:493
+#, elixir-autogen, elixir-format
+msgid "Grants"
+msgstr ""
+
+#: lib/owlgate_web/components/operator_components.ex:308
+#, elixir-autogen, elixir-format
+msgid "Leave pending - normal review queue"
+msgstr ""
+
+#: lib/owlgate_web/components/operator_components.ex:268
+#, elixir-autogen, elixir-format, fuzzy
+msgid "New request"
+msgstr ""
+
+#: lib/owlgate_web/components/operator_components.ex:271
+#, elixir-autogen, elixir-format
+msgid "No applications exist yet - seed or create apps before submitting requests."
+msgstr ""
+
+#: lib/owlgate_web/components/operator_components.ex:411
+#, elixir-autogen, elixir-format
+msgid "Open grants list"
+msgstr ""
+
+#: lib/owlgate_web/components/operator_components.ex:215
+#: lib/owlgate_web/components/operator_components.ex:408
+#, elixir-autogen, elixir-format
+msgid "Queue revoke"
+msgstr ""
+
+#: lib/owlgate_web/components/operator_components.ex:296
+#, elixir-autogen, elixir-format
+msgid "Reason (min 5 characters)"
+msgstr ""
+
+#: lib/owlgate_web/components/operator_components.ex:284
+#, elixir-autogen, elixir-format
+msgid "Request is created for this person; you stay the actor in the audit log."
+msgstr ""
+
+#: lib/owlgate_web/components/operator_components.ex:137
+#: lib/owlgate_web/components/operator_components.ex:359
+#, elixir-autogen, elixir-format, fuzzy
+msgid "Requester"
+msgstr ""
+
+#: lib/owlgate_web/components/layouts.ex:36
+#: lib/owlgate_web/components/layouts.ex:83
+#, elixir-autogen, elixir-format, fuzzy
+msgid "Requests"
+msgstr ""
+
+#: lib/owlgate_web/components/operator_components.ex:315
+#, elixir-autogen, elixir-format
+msgid "Requests are always inserted as"
+msgstr ""
+
+#: lib/owlgate_web/components/operator_components.ex:140
+#: lib/owlgate_web/components/operator_components.ex:508
+#, elixir-autogen, elixir-format
+msgid "Reviewer"
+msgstr ""
+
+#: lib/owlgate_web/components/operator_components.ex:414
+#, elixir-autogen, elixir-format
+msgid "Revoke removes access for the requester on this application (same workflow as Grants)."
+msgstr ""
+
+#: lib/owlgate_web/components/operator_components.ex:278
+#, elixir-autogen, elixir-format
+msgid "Select user..."
+msgstr ""
+
+#: lib/owlgate_web/components/operator_components.ex:330
+#, elixir-autogen, elixir-format
+msgid "Submit request"
+msgstr ""
+
+#: lib/owlgate_web/components/operator_components.ex:512
+#: lib/owlgate_web/components/operator_components.ex:536
+#, elixir-autogen, elixir-format
+msgid "approved"
+msgstr ""
+
+#: lib/owlgate_web/components/operator_components.ex:511
+#: lib/owlgate_web/components/operator_components.ex:537
+#, elixir-autogen, elixir-format
+msgid "denied"
+msgstr ""
+
+#: lib/owlgate_web/components/operator_components.ex:316
+#: lib/owlgate_web/components/operator_components.ex:535
+#, elixir-autogen, elixir-format
+msgid "pending"
+msgstr ""
+
+#: lib/owlgate_web/components/operator_components.ex:63
+#, elixir-autogen, elixir-format
+msgid "Action (exact)"
+msgstr ""
+
+#: lib/owlgate_web/components/operator_components.ex:246
+#, elixir-autogen, elixir-format
+msgid "Any"
+msgstr ""
+
+#: lib/owlgate_web/components/operator_components.ex:455
+#, elixir-autogen, elixir-format
+msgid "Approve and queue provisioning"
+msgstr ""
+
+#: lib/owlgate_web/components/operator_components.ex:73
+#, elixir-autogen, elixir-format
+msgid "Entity type"
+msgstr ""
+
+#: lib/owlgate_web/components/operator_components.ex:192
+#: lib/owlgate_web/components/operator_components.ex:400
+#, elixir-autogen, elixir-format
+msgid "External ref"
+msgstr ""
+
+#: lib/owlgate_web/live/dashboard_live.ex:81
+#, elixir-autogen, elixir-format
+msgid "Full audit log"
+msgstr ""
+
+#: lib/owlgate_web/components/operator_components.ex:392
+#, elixir-autogen, elixir-format, fuzzy
+msgid "Grant ID"
+msgstr ""
+
+#: lib/owlgate_web/components/operator_components.ex:396
+#, elixir-autogen, elixir-format, fuzzy
+msgid "Grant status"
+msgstr ""
+
+#: lib/owlgate_web/components/operator_components.ex:425
+#, elixir-autogen, elixir-format
+msgid "Grant status is"
+msgstr ""
+
+#: lib/owlgate_web/live/dashboard_live.ex:89
+#, elixir-autogen, elixir-format
+msgid "Manage access requests"
+msgstr ""
+
+#: lib/owlgate_web/components/operator_components.ex:168
+#, elixir-autogen, elixir-format
+msgid "Open"
+msgstr ""
+
+#: lib/owlgate_web/live/dashboard_live.ex:62
+#, elixir-autogen, elixir-format
+msgid "Operator dashboard"
+msgstr ""
+
+#: lib/owlgate_web/live/dashboard_live.ex:79
+#, elixir-autogen, elixir-format
+msgid "Recent activity"
+msgstr ""
+
+#: lib/owlgate_web/live/dashboard_live.ex:71
+#, elixir-autogen, elixir-format
+msgid "Refresh"
+msgstr ""
+
+#: lib/owlgate_web/live/dashboard_live.ex:64
+#, elixir-autogen, elixir-format
+msgid "Signed in as %{name} (%{role})"
+msgstr ""
+
+#: lib/owlgate_web/components/operator_components.ex:139
+#: lib/owlgate_web/components/operator_components.ex:191
+#: lib/owlgate_web/components/operator_components.ex:244
+#, elixir-autogen, elixir-format
+msgid "Status"
+msgstr ""
+
+#: lib/owlgate_web/components/operator_components.ex:68
+#, elixir-autogen, elixir-format
+msgid "e.g. access_request.approved"
+msgstr ""
+
+#: lib/owlgate_web/components/operator_components.ex:224
+#, elixir-autogen, elixir-format
+msgid "review role required"
+msgstr ""
+
+#: lib/owlgate_web/components/operator_components.ex:427
+#, elixir-autogen, elixir-format
+msgid "revoke only applies while the grant is active."
+msgstr ""
+
+#: lib/owlgate_web/live/admin/application_live/form.ex:68
+#, elixir-autogen, elixir-format, fuzzy
+msgid "Application created."
+msgstr ""
+
+#: lib/owlgate_web/live/admin/application_live/form.ex:80
+#, elixir-autogen, elixir-format, fuzzy
+msgid "Application updated."
+msgstr ""
+
+#: lib/owlgate_web/live/admin/application_live/form.ex:111
+#: lib/owlgate_web/live/admin/user_live/form.ex:109
+#, elixir-autogen, elixir-format
+msgid "Back"
+msgstr ""
+
+#: lib/owlgate_web/live/admin/application_live/form.ex:45
+#, elixir-autogen, elixir-format
+msgid "Edit application"
+msgstr ""
+
+#: lib/owlgate_web/live/admin/user_live/form.ex:39
+#, elixir-autogen, elixir-format, fuzzy
+msgid "Edit user"
+msgstr ""
+
+#: lib/owlgate_web/live/admin/application_live/form.ex:52
+#, elixir-autogen, elixir-format, fuzzy
+msgid "Invalid application id."
+msgstr ""
+
+#: lib/owlgate_web/live/admin/user_live/form.ex:46
+#, elixir-autogen, elixir-format, fuzzy
+msgid "Invalid user id."
+msgstr ""
+
+#: lib/owlgate_web/live/admin/user_live/form.ex:158
+#, elixir-autogen, elixir-format
+msgid "MFA required"
+msgstr ""
+
+#: lib/owlgate_web/live/admin/user_live/form.ex:132
+#, elixir-autogen, elixir-format
+msgid "Manager (optional)"
+msgstr ""
+
+#: lib/owlgate_web/live/admin/user_live/form.ex:180
+#, elixir-autogen, elixir-format, fuzzy
+msgid "Password (optional)"
+msgstr ""
+
+#: lib/owlgate_web/live/admin/user_live/form.ex:106
+#, elixir-autogen, elixir-format
+msgid "Password required on create; optional on update (leave blank to keep)."
+msgstr ""
+
+#: lib/owlgate_web/live/admin/application_live/form.ex:169
+#, elixir-autogen, elixir-format
+msgid "Requires MFA"
+msgstr ""
+
+#: lib/owlgate_web/live/admin/user_live/form.ex:161
+#, elixir-autogen, elixir-format
+msgid "Reserved for future policy: require MFA at sign-in or for sensitive actions before enforcement is wired up. Toggling this does not affect login yet."
+msgstr ""
+
+#: lib/owlgate_web/live/admin/application_live/form.ex:126
+#, elixir-autogen, elixir-format
+msgid "Risk level"
+msgstr ""
+
+#: lib/owlgate_web/live/admin/application_live/form.ex:172
+#: lib/owlgate_web/live/admin/user_live/form.ex:184
+#, elixir-autogen, elixir-format
+msgid "Save"
+msgstr ""
+
+#: lib/owlgate_web/live/admin/application_live/form.ex:107
+#, elixir-autogen, elixir-format
+msgid "Slug is normalized to lowercase kebab-case."
+msgstr ""
+
+#: lib/owlgate_web/live/admin/user_live/form.ex:142
+#, elixir-autogen, elixir-format
+msgid "Stored for future use (e.g. routing approvals or scoped visibility by org hierarchy). Access rules today follow role only; manager links do not change behavior yet."
+msgstr ""
+
+#: lib/owlgate_web/live/admin/user_live/form.ex:62
+#, elixir-autogen, elixir-format, fuzzy
+msgid "User created."
+msgstr ""
+
+#: lib/owlgate_web/live/admin/user_live/form.ex:74
+#, elixir-autogen, elixir-format, fuzzy
+msgid "User updated."
+msgstr ""
+
+#: lib/owlgate_web/live/admin/application_live/form.ex:139
+#, elixir-autogen, elixir-format
+msgid "— pick owner —"
+msgstr ""
+
+#: lib/owlgate_web/components/operator_components.ex:94
+#, elixir-autogen, elixir-format, fuzzy
+msgid "Action"
+msgstr ""
+
+#: lib/owlgate_web/components/operator_components.ex:93
+#, elixir-autogen, elixir-format
+msgid "Actor"
+msgstr ""
+
+#: lib/owlgate_web/controllers/page_html/home.html.heex:74
+#, elixir-autogen, elixir-format
+msgid "After running"
+msgstr ""
+
+#: lib/owlgate_web/components/operator_components.ex:95
+#, elixir-autogen, elixir-format, fuzzy
+msgid "Entity"
+msgstr ""
+
+#: lib/owlgate_web/components/operator_components.ex:96
+#, elixir-autogen, elixir-format
+msgid "Meta"
+msgstr ""
+
+#: lib/owlgate_web/components/operator_components.ex:102
+#, elixir-autogen, elixir-format
+msgid "No matching events."
+msgstr ""
+
+#: lib/owlgate_web/components/operator_components.ex:92
+#, elixir-autogen, elixir-format
+msgid "When"
+msgstr ""
+
+#: lib/owlgate_web/components/operator_components.ex:541
+#, elixir-autogen, elixir-format, fuzzy
+msgid "active"
+msgstr ""
+
+#: lib/owlgate_web/components/operator_components.ex:540
+#, elixir-autogen, elixir-format
+msgid "failed"
+msgstr ""
+
+#: lib/owlgate_web/components/operator_components.ex:539
+#, elixir-autogen, elixir-format
+msgid "provisioned"
+msgstr ""
+
+#: lib/owlgate_web/components/operator_components.ex:538
+#, elixir-autogen, elixir-format
+msgid "provisioning"
+msgstr ""
+
+#: lib/owlgate_web/components/operator_components.ex:543
+#, elixir-autogen, elixir-format
+msgid "revoked"
+msgstr ""
+
+#: lib/owlgate_web/components/operator_components.ex:542
+#, elixir-autogen, elixir-format
+msgid "revoking"
+msgstr ""
+
+#: lib/owlgate_web/controllers/page_html/home.html.heex:75
+#, elixir-autogen, elixir-format
+msgid "sign in with password"
+msgstr ""
+
+#: lib/owlgate_web/live/audit_live/index.ex:14
+#, elixir-autogen, elixir-format, fuzzy
+msgid "Access grant"
+msgstr ""
+
+#: lib/owlgate_web/live/audit_live/index.ex:12
+#, elixir-autogen, elixir-format
+msgid "Any entity"
+msgstr ""
+
+#: lib/owlgate_web/live/audit_live/index.ex:71
+#, elixir-autogen, elixir-format, fuzzy
+msgid "Audit events"
+msgstr ""
+
+#: lib/owlgate_web/live/audit_live/index.ex:90
+#, elixir-autogen, elixir-format
+msgid "Immutable log of privileged transitions for all users (latest 250 rows shown)."
+msgstr ""
+
+#: lib/owlgate_web/live/status_filter.ex:18
+#, elixir-autogen, elixir-format, fuzzy
+msgid "Invalid status filter."
+msgstr ""
+
+#: lib/owlgate_web/live/audit_live/index.ex:88
+#, elixir-autogen, elixir-format
+msgid "Your activity and access events (latest 250 rows shown)."
+msgstr ""
+
+#: lib/owlgate_web/components/operator_components.ex:198
+#, elixir-autogen, elixir-format, fuzzy
+msgid "No matching grants."
+msgstr ""
+
+#: lib/owlgate_web/components/operator_components.ex:147
+#, elixir-autogen, elixir-format, fuzzy
+msgid "No matching requests."
+msgstr ""
+
+#: lib/owlgate_web/components/operator_components.ex:189
+#, elixir-autogen, elixir-format, fuzzy
+msgid "User"
+msgstr ""

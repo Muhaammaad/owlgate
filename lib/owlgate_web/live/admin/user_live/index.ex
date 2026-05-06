@@ -15,23 +15,28 @@ defmodule OwlGateWeb.Admin.UserLive.Index do
       {id, _} ->
         case Accounts.get_user(id) do
           nil ->
-            {:noreply, put_flash(socket, :error, "User not found.")}
+            {:noreply, put_flash(socket, :error, gettext("User not found."))}
 
           user ->
             case Accounts.delete_user(user) do
               {:ok, _} ->
                 {:noreply,
                  socket
-                 |> put_flash(:info, "User deleted.")
+                 |> put_flash(:info, gettext("User deleted."))
                  |> refresh()}
 
               {:error, reason} ->
-                {:noreply, put_flash(socket, :error, "Cannot delete user (#{inspect(reason)}).")}
+                {:noreply,
+                 put_flash(
+                   socket,
+                   :error,
+                   gettext("Cannot delete user (%{reason}).", reason: inspect(reason))
+                 )}
             end
         end
 
       :error ->
-        {:noreply, put_flash(socket, :error, "Invalid id.")}
+        {:noreply, put_flash(socket, :error, gettext("Invalid id."))}
     end
   end
 
@@ -47,9 +52,14 @@ defmodule OwlGateWeb.Admin.UserLive.Index do
       current_user={@current_user}
       wrapper_class="space-y-8"
     >
-      <.operator_page_header title="Users" subtitle="Create accounts and assign roles (admins only).">
+      <.operator_page_header
+        title={gettext("Users")}
+        subtitle={gettext("Create accounts and assign roles (admins only).")}
+      >
         <:actions>
-          <.link navigate={~p"/admin/users/new"} class="btn btn-primary btn-sm">New user</.link>
+          <.link navigate={~p"/admin/users/new"} class="btn btn-primary btn-sm">
+            {gettext("New user")}
+          </.link>
         </:actions>
       </.operator_page_header>
 
@@ -57,37 +67,41 @@ defmodule OwlGateWeb.Admin.UserLive.Index do
         <table class="table table-sm table-zebra">
           <thead>
             <tr>
-              <th>Email</th>
-              <th>Name</th>
-              <th>Role</th>
-              <th>Manager</th>
-              <th>MFA</th>
+              <th>{gettext("Email")}</th>
+              <th>{gettext("Name")}</th>
+              <th>{gettext("Role")}</th>
+              <th>{gettext("Manager")}</th>
+              <th>{gettext("MFA")}</th>
               <th></th>
             </tr>
           </thead>
           <tbody>
             <tr :if={@users == []}>
-              <td colspan="6" class="text-center text-base-content/70">No users.</td>
+              <td colspan="6" class="text-center text-base-content/70">{gettext("No users.")}</td>
             </tr>
             <%= for u <- @users do %>
               <tr>
                 <td class="font-mono text-xs">{u.email}</td>
                 <td>{u.name}</td>
                 <td><span class="badge badge-ghost">{u.role}</span></td>
-                <td class="text-xs">{(u.manager && u.manager.email) || "—"}</td>
-                <td>{if u.mfa_required, do: "yes", else: "no"}</td>
+                <td class="text-xs">{(u.manager && u.manager.email) || gettext("—")}</td>
+                <td>{if u.mfa_required, do: gettext("yes"), else: gettext("no")}</td>
                 <td class="flex flex-wrap gap-1">
                   <.link navigate={~p"/admin/users/#{u.id}/edit"} class="btn btn-ghost btn-xs">
-                    Edit
+                    {gettext("Edit")}
                   </.link>
                   <button
                     type="button"
                     phx-click="delete"
                     phx-value-id={u.id}
-                    phx-confirm="Delete this user? This fails if they still own apps or have related records."
+                    phx-confirm={
+                      gettext(
+                        "Delete this user? This fails if they still own apps or have related records."
+                      )
+                    }
                     class="btn btn-error btn-xs btn-outline"
                   >
-                    Delete
+                    {gettext("Delete")}
                   </button>
                 </td>
               </tr>

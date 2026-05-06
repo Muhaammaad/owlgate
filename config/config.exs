@@ -26,6 +26,10 @@ config :owlgate, Oban,
 
 config :owlgate, :connector_adapter, OwlGate.Connectors.MockProvider
 
+config :owlgate, OwlGateWeb.Gettext,
+  default_locale: "en",
+  locales: ~w(en de)
+
 # Configure the endpoint
 config :owlgate, OwlGateWeb.Endpoint,
   url: [host: "localhost"],

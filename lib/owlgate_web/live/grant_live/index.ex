@@ -40,23 +40,23 @@ defmodule OwlGateWeb.GrantLive.Index do
          {:ok, _grant} <- Access.request_revoke(actor, id) do
       socket =
         socket
-        |> put_flash(:info, "Revoke job queued.")
+        |> put_flash(:info, gettext("Revoke job queued."))
         |> assign(:action_error, nil)
         |> load_grants()
 
       {:noreply, socket}
     else
       :error ->
-        {:noreply, assign(socket, :action_error, "Invalid grant id.")}
+        {:noreply, assign(socket, :action_error, gettext("Invalid grant id."))}
 
       {:error, :not_found} ->
-        {:noreply, assign(socket, :action_error, "Grant not found.")}
+        {:noreply, assign(socket, :action_error, gettext("Grant not found."))}
 
       {:error, :forbidden} ->
-        {:noreply, assign(socket, :action_error, "You cannot revoke grants.")}
+        {:noreply, assign(socket, :action_error, gettext("You cannot revoke grants."))}
 
       {:error, :invalid_status} ->
-        {:noreply, assign(socket, :action_error, "Grant is not active.")}
+        {:noreply, assign(socket, :action_error, gettext("Grant is not active."))}
 
       {:error, _} = err ->
         {:noreply, assign(socket, :action_error, inspect(err))}
@@ -97,14 +97,14 @@ defmodule OwlGateWeb.GrantLive.Index do
       wrapper_class="space-y-8"
     >
       <.operator_page_header
-        title="Access grants"
+        title={gettext("Access grants")}
         subtitle={grant_page_subtitle(@current_user)}
       />
 
       <p :if={@action_error} class="text-sm text-error">{@action_error}</p>
 
       <div class="flex flex-wrap gap-3 items-center justify-between">
-        <h2 class="font-medium sr-only">Filter</h2>
+        <h2 class="font-medium sr-only">{gettext("Filter")}</h2>
         <.status_select_filter
           form_id="grant-filter-form"
           statuses={Constants.grant_statuses()}
@@ -119,9 +119,11 @@ defmodule OwlGateWeb.GrantLive.Index do
 
   defp grant_page_subtitle(user) do
     if AccessPolicy.employee_data_scope?(user) do
-      "Your provisioned access. Contact a manager if something looks wrong."
+      gettext("Your provisioned access. Contact a manager if something looks wrong.")
     else
-      "Active provisioning outcomes across all users. Managers and admins can queue revokes on active grants."
+      gettext(
+        "Active provisioning outcomes across all users. Managers and admins can queue revokes on active grants."
+      )
     end
   end
 end

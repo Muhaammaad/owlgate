@@ -9,7 +9,7 @@ defmodule OwlGateWeb.AccessRequestLive.Index do
   alias OwlGateWeb.FormHelpers
   alias OwlGateWeb.Live.StatusFilter
 
-  @filterable Constants.request_statuses()
+  @filterable Enum.uniq(Constants.request_statuses() ++ Constants.grant_statuses())
 
   @impl true
   def mount(_params, _session, socket) do
@@ -18,6 +18,7 @@ defmodule OwlGateWeb.AccessRequestLive.Index do
     socket =
       socket
       |> assign(:filter_status, nil)
+      |> assign(:search_query, "")
       |> assign(:form_error, nil)
       |> assign(:subject_user_picker?, AdminPolicy.admin?(user))
       |> assign(:subject_users, subject_users_for_picker(user))
@@ -41,6 +42,13 @@ defmodule OwlGateWeb.AccessRequestLive.Index do
       )
 
     {:noreply, load_requests(socket)}
+  end
+
+  def handle_event("search_requests", %{"q" => q}, socket) do
+    {:noreply,
+     socket
+     |> assign(:search_query, q)
+     |> load_requests()}
   end
 
   def handle_event("create", params, socket) do
@@ -77,15 +85,19 @@ defmodule OwlGateWeb.AccessRequestLive.Index do
       if AdminPolicy.admin?(actor) && flow == "approve_immediately" do
         case Access.approve_request(actor, request.id) do
           {:ok, _} ->
-            put_flash(socket, :info, "Request created and approved; provisioning queued.")
+            put_flash(
+              socket,
+              :info,
+              gettext("Request created and approved; provisioning queued.")
+            )
 
           {:error, reason} ->
             socket
-            |> put_flash(:info, "Access request submitted as pending.")
+            |> put_flash(:info, gettext("Access request submitted as pending."))
             |> put_flash(:error, quick_approve_error(reason))
         end
       else
-        put_flash(socket, :info, "Access request submitted.")
+        put_flash(socket, :info, gettext("Access request submitted."))
       end
 
     load_requests(socket)
@@ -99,50 +111,73 @@ defmodule OwlGateWeb.AccessRequestLive.Index do
     assign(socket, :form_error, create_message(reason))
   end
 
-  defp quick_approve_error(:forbidden), do: "Auto-approve was not allowed for this request."
+  defp quick_approve_error(:forbidden),
+    do: gettext("Auto-approve was not allowed for this request.")
 
   defp quick_approve_error(:invalid_status),
-    do: "Could not approve — request was not in a pending state."
+    do: gettext("Could not approve - request was not in a pending state.")
 
   defp quick_approve_error(:self_approval_not_allowed),
-    do: "Could not approve — you cannot approve your own request when you are the requester."
+    do:
+      gettext(
+        "Could not approve - you cannot approve your own request when you are the requester."
+      )
 
   defp quick_approve_error(:high_risk_requires_owner_or_admin),
-    do: "Could not approve — high-risk apps require the application owner or an admin."
+    do: gettext("Could not approve - high-risk apps require the application owner or an admin.")
 
   defp quick_approve_error(other),
-    do: "Could not auto-approve: #{inspect(other)}"
+    do: gettext("Could not auto-approve: %{reason}", reason: inspect(other))
 
-  defp create_message(:forbidden), do: "You cannot request access for this application."
-  defp create_message(:inactive_application), do: "That application is inactive."
+  defp create_message(:forbidden), do: gettext("You cannot request access for this application.")
+  defp create_message(:inactive_application), do: gettext("That application is inactive.")
 
   defp create_message(:duplicate_request),
-    do: "An open access request already exists for this user and application."
+    do: gettext("An open access request already exists for this user and application.")
 
   defp create_message(:already_has_active_grant),
-    do: "This user already has active access for this application."
+    do: gettext("This user already has active access for this application.")
 
-  defp create_message(:subject_user_required), do: "Choose which user the access is for."
-  defp create_message(:subject_user_not_found), do: "That user no longer exists."
-  defp create_message(other), do: "Unable to create request: #{inspect(other)}"
+  defp create_message(:subject_user_required), do: gettext("Choose which user the access is for.")
+  defp create_message(:subject_user_not_found), do: gettext("That user no longer exists.")
+
+  defp create_message(other),
+    do: gettext("Unable to create request: %{reason}", reason: inspect(other))
 
   defp load_requests(socket) do
     user = socket.assigns.current_user
 
     opts =
-      case socket.assigns.filter_status do
-        nil -> []
-        status when status in @filterable -> [status: status]
-        _ -> []
-      end
+      []
 
     opts =
       if AccessPolicy.employee_data_scope?(user),
         do: Keyword.put(opts, :user_id, user.id),
         else: opts
 
-    assign(socket, :requests, Access.list_access_requests(opts))
+    opts =
+      case socket.assigns[:search_query] do
+        q when is_binary(q) and q != "" -> Keyword.put(opts, :search, q)
+        _ -> opts
+      end
+
+    requests =
+      Access.list_access_requests(opts)
+      |> maybe_filter_by_display_status(socket.assigns.filter_status)
+
+    assign(socket, :requests, requests)
   end
+
+  defp maybe_filter_by_display_status(requests, nil), do: requests
+
+  defp maybe_filter_by_display_status(requests, status) when is_atom(status) do
+    Enum.filter(requests, fn request -> display_status(request) == status end)
+  end
+
+  defp display_status(%{grant: %{status: grant_status}}) when not is_nil(grant_status),
+    do: grant_status
+
+  defp display_status(%{status: request_status}), do: request_status
 
   defp load_applications(socket) do
     assign(socket, :applications, Access.list_applications())
@@ -166,7 +201,7 @@ defmodule OwlGateWeb.AccessRequestLive.Index do
       wrapper_class="space-y-8"
     >
       <.operator_page_header
-        title="Access requests"
+        title={gettext("Access requests")}
         subtitle={access_requests_subtitle(@current_user)}
       />
 
@@ -180,11 +215,25 @@ defmodule OwlGateWeb.AccessRequestLive.Index do
       />
 
       <section>
-        <div class="flex flex-wrap gap-3 items-center justify-between mb-3">
-          <h2 class="font-medium">{access_requests_table_heading(@current_user)}</h2>
+        <div class="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-end sm:justify-between mb-3">
+          <h2 class="font-medium shrink-0">{access_requests_table_heading(@current_user)}</h2>
+          <form phx-change="search_requests" class="w-full sm:max-w-xs">
+            <label class="input input-bordered input-sm flex items-center gap-2 w-full">
+              <span class="text-xs text-base-content/50 whitespace-nowrap">{gettext("Search")}</span>
+              <input
+                type="text"
+                name="q"
+                value={@search_query}
+                placeholder={gettext("Requester email...")}
+                autocomplete="off"
+                phx-debounce="300"
+                class="grow min-w-0 bg-transparent outline-none"
+              />
+            </label>
+          </form>
           <.status_select_filter
             form_id="filter-form"
-            statuses={Constants.request_statuses()}
+            statuses={filterable_statuses()}
             filter_status={@filter_status}
           />
         </div>
@@ -196,18 +245,25 @@ defmodule OwlGateWeb.AccessRequestLive.Index do
   end
 
   defp access_requests_subtitle(%{role: :admin} = user) do
-    "Submit on behalf of someone (use Access for user below), or open any row to review. Signed in as #{user.name}."
+    gettext(
+      "Submit on behalf of someone (use Access for user below), or open any row to review. Signed in as %{name}.",
+      name: user.name
+    )
   end
 
   defp access_requests_subtitle(user) do
     if AccessPolicy.employee_data_scope?(user) do
-      "Submit access you need, or open one of your requests below."
+      gettext("Submit access you need, or open one of your requests below.")
     else
-      "Create a request as #{user.name} or open a row to review approvals."
+      gettext("Create a request as %{name} or open a row to review approvals.", name: user.name)
     end
   end
 
   defp access_requests_table_heading(user) do
-    if AccessPolicy.employee_data_scope?(user), do: "My requests", else: "All requests"
+    if AccessPolicy.employee_data_scope?(user),
+      do: gettext("My requests"),
+      else: gettext("All requests")
   end
+
+  defp filterable_statuses, do: @filterable
 end

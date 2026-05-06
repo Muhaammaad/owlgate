@@ -10,69 +10,88 @@
         <form action={~p"/logout"} method="post" class="inline">
           <input type="hidden" name="_csrf_token" value={@csrf_token} />
           <input type="hidden" name="_method" value="delete" />
-          <button type="submit" class="btn btn-outline btn-sm">Sign out</button>
+          <button type="submit" class="btn btn-outline btn-sm">{gettext("Sign out")}</button>
         </form>
       <% else %>
-        <.link navigate={~p"/login"} class="btn btn-ghost btn-sm">Sign in</.link>
-        <.link navigate={~p"/register"} class="btn btn-outline btn-sm">Register</.link>
+        <.link navigate={~p"/login"} class="btn btn-ghost btn-sm py-2">
+          {gettext("Sign in")}
+        </.link>
+        <.link navigate={~p"/register"} class="btn btn-outline btn-sm py-2">
+          {gettext("Register")}
+        </.link>
       <% end %>
+      <Layouts.locale_switcher />
       <Layouts.theme_toggle />
     </div>
 
     <div>
-      <p class="text-sm font-semibold uppercase tracking-wide text-base-content/60">OwlGate</p>
+      <p class="text-sm font-semibold uppercase tracking-wide text-base-content/60">
+        {gettext("OwlGate")}
+      </p>
       <h1 class="mt-2 text-3xl font-bold tracking-tight text-balance">
-        Access governance demo
+        {gettext("Access governance demo")}
       </h1>
       <p class="mt-4 text-base leading-relaxed text-base-content/80">
-        Request, approve, provision, and revoke application access with policy checks, audit events, and async connector jobs. Sign in to use the operator UI.
+        {gettext(
+          "Request, approve, provision, and revoke application access with policy checks, audit events, and async connector jobs. Sign in to use the operator UI."
+        )}
       </p>
     </div>
 
     <div class="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
       <%= if assigns[:current_user] do %>
         <.link navigate={~p"/dashboard"} class="btn btn-primary">
-          Dashboard
+          {gettext("Dashboard")}
         </.link>
         <.link navigate={~p"/access-requests"} class="btn btn-outline">
-          Access requests
+          {gettext("Access requests")}
         </.link>
         <%= if OwlGate.Policy.AdminPolicy.admin?(@current_user) do %>
           <.link navigate={~p"/admin/users"} class="btn btn-outline">
-            Users
+            {gettext("Users")}
           </.link>
           <.link navigate={~p"/admin/applications"} class="btn btn-outline">
-            Apps
+            {gettext("Apps")}
           </.link>
         <% end %>
       <% else %>
-        <.link navigate={~p"/login"} class="btn btn-primary">Sign in</.link>
-        <.link navigate={~p"/register"} class="btn btn-outline">Create account</.link>
+        <.link navigate={~p"/login"} class="btn btn-primary py-3">{gettext("Sign in")}</.link>
+        <.link navigate={~p"/register"} class="btn btn-outline py-3">
+          {gettext("Create account")}
+        </.link>
       <% end %>
     </div>
 
     <%= if assigns[:current_user] do %>
       <p class="text-sm text-base-content/70">
-        Signed in as <span class="font-medium text-base-content">{@current_user.email}</span>
-        ({@current_user.role}). Open Dashboard or Requests above.
+        {gettext("Signed in as")}
+        <span class="font-medium text-base-content">{@current_user.email}</span>
+        ({@current_user.role}). {gettext("Open Dashboard or Requests above.")}
       </p>
     <% else %>
       <p class="rounded-box border border-base-300 bg-base-200/40 p-4 text-sm text-base-content/80 space-y-2">
         <span class="block">
-          After <code class="text-xs font-mono">mix run priv/repo/seeds.exs</code>, sign in with password <code class="text-xs font-mono">Password123!</code>:
+          {gettext("After running")}
+          <code class="text-xs font-mono">mix run priv/repo/seeds.exs</code>, {gettext(
+            "sign in with password"
+          )}
+          <code class="text-xs font-mono">Password123!</code>:
         </span>
         <span class="block font-mono text-xs">
           admin@owlgate.local · manager@owlgate.local · employee@owlgate.local
         </span>
         <span class="block pt-1">
-          New registrations can select role (employee, manager, admin) on the register form.
+          {gettext(
+            "New registrations can select role (employee, manager, admin) on the register form."
+          )}
         </span>
       </p>
     <% end %>
 
     <p class="text-xs text-base-content/50">
-      Run <code class="font-mono">mix run priv/repo/seeds.exs</code>
-      after migrate if you need demo users and the demo-portal application.
+      {gettext("Run")}
+      <code class="font-mono">mix run priv/repo/seeds.exs</code>
+      {gettext("after migrate if you need demo users and the demo-portal application.")}
     </p>
   </div>
 </div>

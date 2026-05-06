@@ -2,7 +2,7 @@ defmodule OwlGateWeb.DashboardLive do
   @moduledoc "Operator dashboard with access request and grant counts."
   use OwlGateWeb, :live_view
 
-  alias OwlGate.Access
+  alias OwlGate.{Access, Audit}
   alias OwlGate.Access.Constants
   alias OwlGate.Policy.AccessPolicy
 
@@ -26,9 +26,23 @@ defmodule OwlGateWeb.DashboardLive do
 
     snap = Access.dashboard_snapshot(opts)
 
+    recent =
+      Audit.list_events(recent_audit_opts(user))
+
     socket
     |> assign(:request_rows, row_pairs(snap.requests, Constants.request_statuses()))
     |> assign(:grant_rows, row_pairs(snap.grants, Constants.grant_statuses()))
+    |> assign(:recent_events, recent)
+  end
+
+  defp recent_audit_opts(%{} = user) do
+    opts = [limit: 12]
+
+    if AccessPolicy.employee_data_scope?(user) do
+      Keyword.put(opts, :viewer_user_id, user.id)
+    else
+      opts
+    end
   end
 
   defp row_pairs(counts_map, statuses) do
@@ -45,21 +59,34 @@ defmodule OwlGateWeb.DashboardLive do
     >
       <div class="flex justify-between items-start gap-4 flex-wrap">
         <div>
-          <h1 class="text-2xl font-semibold">Operator dashboard</h1>
+          <h1 class="text-2xl font-semibold">{gettext("Operator dashboard")}</h1>
           <p class="text-base-content/70 text-sm mt-1">
-            Signed in as {@current_user.name} ({@current_user.role})
+            {gettext("Signed in as %{name} (%{role})",
+              name: @current_user.name,
+              role: @current_user.role
+            )}
           </p>
         </div>
         <button type="button" phx-click="refresh" class="btn btn-outline btn-sm">
-          Refresh
+          {gettext("Refresh")}
         </button>
       </div>
 
       <.dashboard_snapshot_cards request_rows={@request_rows} grant_rows={@grant_rows} />
 
+      <section class="space-y-3">
+        <div class="flex flex-wrap justify-between items-center gap-2">
+          <h2 class="font-medium">{gettext("Recent activity")}</h2>
+          <.link navigate={~p"/audit-events"} class="link link-primary text-sm">
+            {gettext("Full audit log")}
+          </.link>
+        </div>
+        <.audit_events_table events={@recent_events} />
+      </section>
+
       <div class="flex gap-3 flex-wrap">
         <.link navigate={~p"/access-requests"} class="btn btn-primary">
-          Manage access requests
+          {gettext("Manage access requests")}
         </.link>
       </div>
     </.operator_shell>

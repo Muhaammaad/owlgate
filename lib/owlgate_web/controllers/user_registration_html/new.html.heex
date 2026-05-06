@@ -3,12 +3,13 @@
 <div class="min-h-[70vh] px-4 py-16 sm:px-6 lg:px-8">
   <div class="mx-auto max-w-md space-y-6">
     <div class="flex justify-between items-center gap-4">
-      <h1 class="text-2xl font-semibold">Create account</h1>
+      <h1 class="text-2xl font-semibold">{gettext("Create account")}</h1>
+      <Layouts.locale_switcher />
       <Layouts.theme_toggle />
     </div>
 
     <p class="text-sm text-base-content/70">
-      Choose your role during signup. Password must be at least 8 characters.
+      {gettext("Choose your role during signup. Password must be at least 8 characters.")}
     </p>
 
     <form
@@ -19,7 +20,7 @@
       <input type="hidden" name="_csrf_token" value={@csrf_token} />
 
       <label class="form-control w-full">
-        <span class="label-text text-sm">Email</span>
+        <span class="label-text text-sm">{gettext("Email")}</span>
         <input
           type="email"
           name="user[email]"
@@ -31,7 +32,7 @@
       </label>
 
       <label class="form-control w-full">
-        <span class="label-text text-sm">Name</span>
+        <span class="label-text text-sm">{gettext("Name")}</span>
         <input
           type="text"
           name="user[name]"
@@ -43,7 +44,7 @@
       </label>
 
       <label class="form-control w-full">
-        <span class="label-text text-sm">Password</span>
+        <span class="label-text text-sm">{gettext("Password")}</span>
         <input
           type="password"
           name="user[password]"
@@ -54,20 +55,20 @@
       </label>
 
       <label class="form-control w-full">
-        <span class="label-text text-sm">Role</span>
+        <span class="label-text text-sm">{gettext("Role")}</span>
         <select name="user[role]" class="select select-bordered w-full" required>
-          <option value="employee" selected={@role == "employee"}>Employee</option>
-          <option value="manager" selected={@role == "manager"}>Manager</option>
-          <option value="admin" selected={@role == "admin"}>Admin</option>
+          <option value="employee" selected={@role == "employee"}>{gettext("Employee")}</option>
+          <option value="manager" selected={@role == "manager"}>{gettext("Manager")}</option>
+          <option value="admin" selected={@role == "admin"}>{gettext("Admin")}</option>
         </select>
       </label>
 
-      <button type="submit" class="btn btn-primary w-full my-4">Register</button>
+      <button type="submit" class="btn btn-primary w-full my-4">{gettext("Register")}</button>
     </form>
 
     <div class="flex flex-wrap gap-3 text-sm">
-      <.link navigate={~p"/"} class="link link-primary">Home</.link>
-      <.link navigate={~p"/login"} class="link link-primary">Sign in</.link>
+      <.link navigate={~p"/"} class="link link-primary">{gettext("Home")}</.link>
+      <.link navigate={~p"/login"} class="link link-primary">{gettext("Sign in")}</.link>
     </div>
   </div>
 </div>

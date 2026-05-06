@@ -27,30 +27,40 @@ defmodule OwlGateWeb.Layouts do
               class="dropdown-content menu menu-sm z-[100] mt-2 w-56 rounded-box border border-base-300 bg-base-100 p-2 shadow-lg"
             >
               <li>
-                <.link navigate={~p"/dashboard"} class="justify-between">Dashboard</.link>
+                <.link navigate={~p"/dashboard"} class="justify-between">
+                  {gettext("Dashboard")}
+                </.link>
               </li>
               <li>
-                <.link navigate={~p"/access-requests"} class="justify-between">Requests</.link>
+                <.link navigate={~p"/access-requests"} class="justify-between">
+                  {gettext("Requests")}
+                </.link>
               </li>
               <li>
-                <.link navigate={~p"/grants"} class="justify-between">Grants</.link>
+                <.link navigate={~p"/grants"} class="justify-between">{gettext("Grants")}</.link>
               </li>
               <li>
-                <.link navigate={~p"/audit-events"} class="justify-between">Audit</.link>
+                <.link navigate={~p"/audit-events"} class="justify-between">{gettext("Audit")}</.link>
               </li>
               <%= if OwlGate.Policy.AdminPolicy.admin?(@current_user) do %>
                 <li>
-                  <.link navigate={~p"/admin/users"} class="justify-between">Users</.link>
+                  <.link navigate={~p"/admin/users"} class="justify-between">
+                    {gettext("Users")}
+                  </.link>
                 </li>
                 <li>
-                  <.link navigate={~p"/admin/applications"} class="justify-between">Apps</.link>
+                  <.link navigate={~p"/admin/applications"} class="justify-between">
+                    {gettext("Apps")}
+                  </.link>
                 </li>
               <% end %>
               <li>
                 <form action={~p"/logout"} method="post" class="w-full">
                   <input type="hidden" name="_csrf_token" value={get_csrf_token()} />
                   <input type="hidden" name="_method" value="delete" />
-                  <button type="submit" class="btn btn-outline btn-sm w-full">Sign out</button>
+                  <button type="submit" class="btn btn-outline btn-sm w-full">
+                    {gettext("Sign out")}
+                  </button>
                 </form>
               </li>
             </ul>
@@ -66,24 +76,35 @@ defmodule OwlGateWeb.Layouts do
             class="hidden lg:flex flex-row flex-wrap items-center gap-1 pl-1 border-l border-base-300/60 ml-1"
             aria-label="Main"
           >
-            <.link navigate={~p"/dashboard"} class="btn btn-ghost btn-sm">Dashboard</.link>
-            <.link navigate={~p"/access-requests"} class="btn btn-ghost btn-sm">Requests</.link>
-            <.link navigate={~p"/grants"} class="btn btn-ghost btn-sm">Grants</.link>
-            <.link navigate={~p"/audit-events"} class="btn btn-ghost btn-sm">Audit</.link>
+            <.link navigate={~p"/dashboard"} class="btn btn-ghost btn-sm">
+              {gettext("Dashboard")}
+            </.link>
+            <.link navigate={~p"/access-requests"} class="btn btn-ghost btn-sm">
+              {gettext("Requests")}
+            </.link>
+            <.link navigate={~p"/grants"} class="btn btn-ghost btn-sm">{gettext("Grants")}</.link>
+            <.link navigate={~p"/audit-events"} class="btn btn-ghost btn-sm">
+              {gettext("Audit")}
+            </.link>
             <%= if OwlGate.Policy.AdminPolicy.admin?(@current_user) do %>
-              <.link navigate={~p"/admin/users"} class="btn btn-ghost btn-sm">Users</.link>
-              <.link navigate={~p"/admin/applications"} class="btn btn-ghost btn-sm">Apps</.link>
+              <.link navigate={~p"/admin/users"} class="btn btn-ghost btn-sm">
+                {gettext("Users")}
+              </.link>
+              <.link navigate={~p"/admin/applications"} class="btn btn-ghost btn-sm">
+                {gettext("Apps")}
+              </.link>
             <% end %>
           </nav>
         <% end %>
       </div>
 
       <div class="navbar-end flex-none gap-2 shrink-0">
+        <.locale_switcher />
         <%= if @current_user do %>
           <form action={~p"/logout"} method="post" class="hidden lg:block">
             <input type="hidden" name="_csrf_token" value={get_csrf_token()} />
             <input type="hidden" name="_method" value="delete" />
-            <button type="submit" class="btn btn-outline btn-sm">Sign out</button>
+            <button type="submit" class="btn btn-outline btn-sm">{gettext("Sign out")}</button>
           </form>
         <% end %>
         <.theme_toggle />
@@ -206,6 +227,15 @@ defmodule OwlGateWeb.Layouts do
       >
         <.icon name="hero-moon-micro" class="size-4 opacity-75 hover:opacity-100" />
       </button>
+    </div>
+    """
+  end
+
+  def locale_switcher(assigns) do
+    ~H"""
+    <div class="join">
+      <.link navigate={~p"/locale/en"} class="btn btn-xs join-item">EN</.link>
+      <.link navigate={~p"/locale/de"} class="btn btn-xs join-item">DE</.link>
     </div>
     """
   end

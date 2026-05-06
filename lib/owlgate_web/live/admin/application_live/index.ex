@@ -15,14 +15,14 @@ defmodule OwlGateWeb.Admin.ApplicationLive.Index do
       {id, _} ->
         case Access.fetch_application(id) do
           {:error, :not_found} ->
-            {:noreply, put_flash(socket, :error, "Application not found.")}
+            {:noreply, put_flash(socket, :error, gettext("Application not found."))}
 
           {:ok, app} ->
             case Access.delete_application(app) do
               {:ok, _} ->
                 {:noreply,
                  socket
-                 |> put_flash(:info, "Application deleted.")
+                 |> put_flash(:info, gettext("Application deleted."))
                  |> refresh()}
 
               {:error, reason} ->
@@ -30,13 +30,16 @@ defmodule OwlGateWeb.Admin.ApplicationLive.Index do
                  put_flash(
                    socket,
                    :error,
-                   "Cannot delete (#{inspect(reason)}). Remove requests/grants first."
+                   gettext(
+                     "Cannot delete (%{reason}). Remove requests/grants first.",
+                     reason: inspect(reason)
+                   )
                  )}
             end
         end
 
       :error ->
-        {:noreply, put_flash(socket, :error, "Invalid id.")}
+        {:noreply, put_flash(socket, :error, gettext("Invalid id."))}
     end
   end
 
@@ -52,10 +55,13 @@ defmodule OwlGateWeb.Admin.ApplicationLive.Index do
       current_user={@current_user}
       wrapper_class="space-y-8"
     >
-      <.operator_page_header title="Apps" subtitle="Define apps employees can request access to.">
+      <.operator_page_header
+        title={gettext("Apps")}
+        subtitle={gettext("Define apps employees can request access to.")}
+      >
         <:actions>
           <.link navigate={~p"/admin/applications/new"} class="btn btn-primary btn-sm">
-            New application
+            {gettext("New application")}
           </.link>
         </:actions>
       </.operator_page_header>
@@ -64,18 +70,20 @@ defmodule OwlGateWeb.Admin.ApplicationLive.Index do
         <table class="table table-sm table-zebra">
           <thead>
             <tr>
-              <th>Name</th>
-              <th>Slug</th>
-              <th>Risk</th>
-              <th>Owner</th>
-              <th>Active</th>
-              <th>MFA</th>
+              <th>{gettext("Name")}</th>
+              <th>{gettext("Slug")}</th>
+              <th>{gettext("Risk")}</th>
+              <th>{gettext("Owner")}</th>
+              <th>{gettext("Active")}</th>
+              <th>{gettext("MFA")}</th>
               <th></th>
             </tr>
           </thead>
           <tbody>
             <tr :if={@applications == []}>
-              <td colspan="7" class="text-center text-base-content/70">No applications.</td>
+              <td colspan="7" class="text-center text-base-content/70">
+                {gettext("No applications.")}
+              </td>
             </tr>
             <%= for a <- @applications do %>
               <tr>
@@ -83,20 +91,24 @@ defmodule OwlGateWeb.Admin.ApplicationLive.Index do
                 <td class="font-mono text-xs">{a.slug}</td>
                 <td><span class="badge badge-ghost">{a.risk_level}</span></td>
                 <td class="text-xs">{a.owner.email}</td>
-                <td>{if a.active, do: "yes", else: "no"}</td>
-                <td>{if a.requires_mfa, do: "yes", else: "no"}</td>
+                <td>{if a.active, do: gettext("yes"), else: gettext("no")}</td>
+                <td>{if a.requires_mfa, do: gettext("yes"), else: gettext("no")}</td>
                 <td class="flex flex-wrap gap-1">
                   <.link navigate={~p"/admin/applications/#{a.id}/edit"} class="btn btn-ghost btn-xs">
-                    Edit
+                    {gettext("Edit")}
                   </.link>
                   <button
                     type="button"
                     phx-click="delete"
                     phx-value-id={a.id}
-                    phx-confirm="Delete this application? Fails if access requests or grants still reference it."
+                    phx-confirm={
+                      gettext(
+                        "Delete this application? Fails if access requests or grants still reference it."
+                      )
+                    }
                     class="btn btn-error btn-xs btn-outline"
                   >
-                    Delete
+                    {gettext("Delete")}
                   </button>
                 </td>
               </tr>

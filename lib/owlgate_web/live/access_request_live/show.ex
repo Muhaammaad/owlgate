@@ -17,14 +17,14 @@ defmodule OwlGateWeb.AccessRequestLive.Show do
           {:error, :not_found} ->
             {:ok,
              socket
-             |> put_flash(:error, "Access request not found.")
+             |> put_flash(:error, gettext("Access request not found."))
              |> push_navigate(to: ~p"/access-requests")}
         end
 
       :error ->
         {:ok,
          socket
-         |> put_flash(:error, "Invalid request id.")
+         |> put_flash(:error, gettext("Invalid request id."))
          |> push_navigate(to: ~p"/access-requests")}
     end
   end
@@ -97,7 +97,8 @@ defmodule OwlGateWeb.AccessRequestLive.Show do
     actor = socket.assigns.current_user
 
     if not AdminPolicy.admin?(actor) do
-      {:noreply, assign(socket, :action_error, "Only admins can queue revoke from this page.")}
+      {:noreply,
+       assign(socket, :action_error, gettext("Only admins can queue revoke from this page."))}
     else
       req_id = socket.assigns.request_id
 
@@ -109,73 +110,91 @@ defmodule OwlGateWeb.AccessRequestLive.Show do
         {:noreply,
          socket
          |> assign(:action_error, nil)
-         |> put_flash(:info, "Revoke job queued.")}
+         |> put_flash(:info, gettext("Revoke job queued."))}
       else
         :error ->
-          {:noreply, assign(socket, :action_error, "Invalid grant id.")}
+          {:noreply, assign(socket, :action_error, gettext("Invalid grant id."))}
 
         false ->
-          {:noreply, assign(socket, :action_error, "That grant is not linked to this request.")}
+          {:noreply,
+           assign(socket, :action_error, gettext("That grant is not linked to this request."))}
 
         {:error, :not_found} ->
-          {:noreply, assign(socket, :action_error, "Grant not found.")}
+          {:noreply, assign(socket, :action_error, gettext("Grant not found."))}
 
         {:error, :forbidden} ->
-          {:noreply, assign(socket, :action_error, "You cannot revoke this grant.")}
+          {:noreply, assign(socket, :action_error, gettext("You cannot revoke this grant."))}
 
         {:error, :invalid_status} ->
-          {:noreply, assign(socket, :action_error, "Grant is not active.")}
+          {:noreply, assign(socket, :action_error, gettext("Grant is not active."))}
 
         {:error, _} = err ->
-          {:noreply, assign(socket, :action_error, "Unable to revoke: #{inspect(err)}")}
+          {:noreply,
+           assign(
+             socket,
+             :action_error,
+             gettext("Unable to revoke: %{reason}", reason: inspect(err))
+           )}
       end
     end
   end
 
   defp fold_approve({:ok, _}, socket, id) do
     {:ok, socket} = reload_request(socket, id)
-    put_flash(socket, :info, "Request approved — provisioning queued.")
+    put_flash(socket, :info, gettext("Request approved - provisioning queued."))
   end
 
   defp fold_approve({:error, :forbidden}, socket, _id) do
-    assign(socket, :action_error, "You cannot review this request.")
+    assign(socket, :action_error, gettext("You cannot review this request."))
   end
 
   defp fold_approve({:error, :invalid_status}, socket, _id) do
-    assign(socket, :action_error, "This request cannot be approved in its current state.")
+    assign(
+      socket,
+      :action_error,
+      gettext("This request cannot be approved in its current state.")
+    )
   end
 
   defp fold_approve({:error, :self_approval_not_allowed}, socket, _id) do
-    assign(socket, :action_error, "You cannot approve your own request.")
+    assign(socket, :action_error, gettext("You cannot approve your own request."))
   end
 
   defp fold_approve({:error, :high_risk_requires_owner_or_admin}, socket, _id) do
-    assign(socket, :action_error, "High-risk applications require the app owner or an admin.")
+    assign(
+      socket,
+      :action_error,
+      gettext("High-risk applications require the app owner or an admin.")
+    )
   end
 
   defp fold_approve({:error, reason}, socket, _id) do
-    assign(socket, :action_error, "Unable to approve: #{inspect(reason)}")
+    assign(
+      socket,
+      :action_error,
+      gettext("Unable to approve: %{reason}", reason: inspect(reason))
+    )
   end
 
   defp fold_deny({:ok, _}, socket, id) do
     {:ok, socket} = reload_request(socket, id)
-    put_flash(socket, :info, "Request denied.")
+    put_flash(socket, :info, gettext("Request denied."))
   end
 
   defp fold_deny({:error, :forbidden}, socket, _id) do
-    assign(socket, :action_error, "You cannot review this request.")
+    assign(socket, :action_error, gettext("You cannot review this request."))
   end
 
   defp fold_deny({:error, :invalid_status}, socket, _id) do
-    assign(socket, :action_error, "This request cannot be denied in its current state.")
+    assign(socket, :action_error, gettext("This request cannot be denied in its current state."))
   end
 
   defp fold_deny({:error, :denial_reason_required}, socket, _id) do
-    assign(socket, :action_error, "A denial reason is required.")
+    assign(socket, :action_error, gettext("A denial reason is required."))
   end
 
   defp fold_deny({:error, %Ecto.Changeset{}}, socket, _id) do
-    assign(socket, :action_error, "Provide a clear denial reason (min 3 characters).")
+    assign(socket, :action_error, gettext("Provide a clear denial reason (min 3 characters)."))
   end
 
   @impl true
@@ -203,7 +222,7 @@ defmodule OwlGateWeb.AccessRequestLive.Show do
 
       <div class="flex flex-wrap gap-3">
         <.link navigate={~p"/access-requests"} class="btn btn-ghost btn-sm">
-          Back to list
+          {gettext("Back to list")}
         </.link>
       </div>
     </.operator_shell>

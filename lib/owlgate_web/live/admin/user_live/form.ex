@@ -21,7 +21,7 @@ defmodule OwlGateWeb.Admin.UserLive.Form do
     case Map.get(params, "id") do
       nil ->
         socket
-        |> assign(:page_title, "New user")
+        |> assign(:page_title, gettext("New user"))
         |> assign(:user, nil)
         |> assign(:changeset, Accounts.change_user_admin_create())
 
@@ -31,19 +31,19 @@ defmodule OwlGateWeb.Admin.UserLive.Form do
             case Accounts.get_user(id) do
               nil ->
                 socket
-                |> put_flash(:error, "User not found.")
+                |> put_flash(:error, gettext("User not found."))
                 |> push_navigate(to: ~p"/admin/users")
 
               %User{} = user ->
                 socket
-                |> assign(:page_title, "Edit user")
+                |> assign(:page_title, gettext("Edit user"))
                 |> assign(:user, user)
                 |> assign(:changeset, Accounts.change_user_admin(user))
             end
 
           :error ->
             socket
-            |> put_flash(:error, "Invalid user id.")
+            |> put_flash(:error, gettext("Invalid user id."))
             |> push_navigate(to: ~p"/admin/users")
         end
     end
@@ -59,7 +59,7 @@ defmodule OwlGateWeb.Admin.UserLive.Form do
           {:ok, _} ->
             {:noreply,
              socket
-             |> put_flash(:info, "User created.")
+             |> put_flash(:info, gettext("User created."))
              |> push_navigate(to: ~p"/admin/users")}
 
           {:error, %Ecto.Changeset{} = cs} ->
@@ -71,7 +71,7 @@ defmodule OwlGateWeb.Admin.UserLive.Form do
           {:ok, _} ->
             {:noreply,
              socket
-             |> put_flash(:info, "User updated.")
+             |> put_flash(:info, gettext("User updated."))
              |> push_navigate(to: ~p"/admin/users")}
 
           {:error, %Ecto.Changeset{} = cs} ->
@@ -103,10 +103,10 @@ defmodule OwlGateWeb.Admin.UserLive.Form do
     >
       <.operator_page_header
         title={@page_title}
-        subtitle="Password required on create; optional on update (leave blank to keep)."
+        subtitle={gettext("Password required on create; optional on update (leave blank to keep).")}
       >
         <:actions>
-          <.link navigate={~p"/admin/users"} class="btn btn-ghost btn-sm">Back</.link>
+          <.link navigate={~p"/admin/users"} class="btn btn-ghost btn-sm">{gettext("Back")}</.link>
         </:actions>
       </.operator_page_header>
 
@@ -116,11 +116,11 @@ defmodule OwlGateWeb.Admin.UserLive.Form do
         phx-submit="save"
         class="rounded-box border border-base-300 bg-base-200/30 p-6 space-y-4"
       >
-        <.input field={f[:email]} type="email" label="Email" required />
-        <.input field={f[:name]} type="text" label="Name" required />
+        <.input field={f[:email]} type="email" label={gettext("Email")} required />
+        <.input field={f[:name]} type="text" label={gettext("Name")} required />
 
         <label class="form-control w-full">
-          <span class="label-text text-sm">Role</span>
+          <span class="label-text text-sm">{gettext("Role")}</span>
           <select name="user[role]" class="select select-bordered w-full">
             <%= for r <- @role_options do %>
               <option value={r} selected={@selected_role == r}>{r}</option>
@@ -129,7 +129,7 @@ defmodule OwlGateWeb.Admin.UserLive.Form do
         </label>
 
         <label class="form-control w-full">
-          <span class="label-text text-sm">Manager (optional)</span>
+          <span class="label-text text-sm">{gettext("Manager (optional)")}</span>
           <select name="user[manager_id]" class="select select-bordered w-full">
             <option value="">—</option>
             <%= for m <- @managers do %>
@@ -139,7 +139,9 @@ defmodule OwlGateWeb.Admin.UserLive.Form do
             <% end %>
           </select>
           <span class="label-text-alt text-xs text-base-content/60 leading-snug pt-1">
-            Stored for future use (e.g. routing approvals or scoped visibility by org hierarchy). Access rules today follow role only; manager links do not change behavior yet.
+            {gettext(
+              "Stored for future use (e.g. routing approvals or scoped visibility by org hierarchy). Access rules today follow role only; manager links do not change behavior yet."
+            )}
           </span>
         </label>
 
@@ -153,10 +155,12 @@ defmodule OwlGateWeb.Admin.UserLive.Form do
               checked={Ecto.Changeset.get_field(@changeset, :mfa_required) == true}
               class="checkbox checkbox-sm"
             />
-            <span class="label-text">MFA required</span>
+            <span class="label-text">{gettext("MFA required")}</span>
           </label>
           <p class="text-xs text-base-content/60 leading-snug pl-9">
-            Reserved for future policy: require MFA at sign-in or for sensitive actions before enforcement is wired up. Toggling this does not affect login yet.
+            {gettext(
+              "Reserved for future policy: require MFA at sign-in or for sensitive actions before enforcement is wired up. Toggling this does not affect login yet."
+            )}
           </p>
         </div>
 
@@ -164,7 +168,7 @@ defmodule OwlGateWeb.Admin.UserLive.Form do
           :if={is_nil(@user)}
           field={f[:password]}
           type="password"
-          label="Password"
+          label={gettext("Password")}
           required
           autocomplete="new-password"
         />
@@ -173,11 +177,11 @@ defmodule OwlGateWeb.Admin.UserLive.Form do
           :if={@user}
           field={f[:password]}
           type="password"
-          label="Password (optional)"
+          label={gettext("Password (optional)")}
           autocomplete="new-password"
         />
 
-        <button type="submit" class="btn btn-primary">Save</button>
+        <button type="submit" class="btn btn-primary">{gettext("Save")}</button>
       </.form>
     </.operator_shell>
     """

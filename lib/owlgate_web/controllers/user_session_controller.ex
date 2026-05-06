@@ -18,24 +18,27 @@ defmodule OwlGateWeb.UserSessionController do
       {:ok, user} ->
         conn
         |> put_session(@session_key, user.id)
-        |> put_flash(:info, "Welcome back.")
+        |> put_flash(:info, gettext("Welcome back."))
         |> redirect(to: redirect_path_for(user))
 
       {:error, :password_not_set} ->
         conn
-        |> put_flash(:error, "Password not set for this account. Ask an admin to set one.")
+        |> put_flash(
+          :error,
+          gettext("Password not set for this account. Ask an admin to set one.")
+        )
         |> redirect(to: ~p"/login")
 
       {:error, :invalid_credentials} ->
         conn
-        |> put_flash(:error, "Invalid email or password.")
+        |> put_flash(:error, gettext("Invalid email or password."))
         |> redirect(to: ~p"/login")
     end
   end
 
   def create(conn, _params) do
     conn
-    |> put_flash(:error, "Email and password are required.")
+    |> put_flash(:error, gettext("Email and password are required."))
     |> redirect(to: ~p"/login")
   end
 
@@ -43,7 +46,7 @@ defmodule OwlGateWeb.UserSessionController do
     conn
     |> configure_session(drop: false)
     |> delete_session(@session_key)
-    |> put_flash(:info, "Signed out.")
+    |> put_flash(:info, gettext("Signed out."))
     |> redirect(to: ~p"/")
   end
 

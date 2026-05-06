@@ -27,7 +27,7 @@ defmodule OwlGateWeb.Admin.ApplicationLive.Form do
           struct(GateApp, %{risk_level: :low, active: true, requires_mfa: false})
 
         socket
-        |> assign(:page_title, "New application")
+        |> assign(:page_title, gettext("New application"))
         |> assign(:application, nil)
         |> assign(:changeset, Access.change_application(empty))
 
@@ -37,19 +37,19 @@ defmodule OwlGateWeb.Admin.ApplicationLive.Form do
             case Access.fetch_application(id) do
               {:error, :not_found} ->
                 socket
-                |> put_flash(:error, "Application not found.")
+                |> put_flash(:error, gettext("Application not found."))
                 |> push_navigate(to: ~p"/admin/applications")
 
               {:ok, %GateApp{} = app} ->
                 socket
-                |> assign(:page_title, "Edit application")
+                |> assign(:page_title, gettext("Edit application"))
                 |> assign(:application, app)
                 |> assign(:changeset, Access.change_application(app))
             end
 
           :error ->
             socket
-            |> put_flash(:error, "Invalid application id.")
+            |> put_flash(:error, gettext("Invalid application id."))
             |> push_navigate(to: ~p"/admin/applications")
         end
     end
@@ -65,7 +65,7 @@ defmodule OwlGateWeb.Admin.ApplicationLive.Form do
           {:ok, _} ->
             {:noreply,
              socket
-             |> put_flash(:info, "Application created.")
+             |> put_flash(:info, gettext("Application created."))
              |> push_navigate(to: ~p"/admin/applications")}
 
           {:error, %Ecto.Changeset{} = cs} ->
@@ -77,7 +77,7 @@ defmodule OwlGateWeb.Admin.ApplicationLive.Form do
           {:ok, _} ->
             {:noreply,
              socket
-             |> put_flash(:info, "Application updated.")
+             |> put_flash(:info, gettext("Application updated."))
              |> push_navigate(to: ~p"/admin/applications")}
 
           {:error, %Ecto.Changeset{} = cs} ->
@@ -104,10 +104,12 @@ defmodule OwlGateWeb.Admin.ApplicationLive.Form do
     >
       <.operator_page_header
         title={@page_title}
-        subtitle="Slug is normalized to lowercase kebab-case."
+        subtitle={gettext("Slug is normalized to lowercase kebab-case.")}
       >
         <:actions>
-          <.link navigate={~p"/admin/applications"} class="btn btn-ghost btn-sm">Back</.link>
+          <.link navigate={~p"/admin/applications"} class="btn btn-ghost btn-sm">
+            {gettext("Back")}
+          </.link>
         </:actions>
       </.operator_page_header>
 
@@ -117,11 +119,11 @@ defmodule OwlGateWeb.Admin.ApplicationLive.Form do
         phx-submit="save"
         class="rounded-box border border-base-300 bg-base-200/30 p-6 space-y-4"
       >
-        <.input field={f[:name]} type="text" label="Name" required />
-        <.input field={f[:slug]} type="text" label="Slug" required />
+        <.input field={f[:name]} type="text" label={gettext("Name")} required />
+        <.input field={f[:slug]} type="text" label={gettext("Slug")} required />
 
         <label class="form-control w-full">
-          <span class="label-text text-sm">Risk level</span>
+          <span class="label-text text-sm">{gettext("Risk level")}</span>
           <select name="application[risk_level]" class="select select-bordered w-full">
             <%= for r <- @risk_options do %>
               <option value={r} selected={Ecto.Changeset.get_field(@changeset, :risk_level) == r}>
@@ -132,9 +134,9 @@ defmodule OwlGateWeb.Admin.ApplicationLive.Form do
         </label>
 
         <label class="form-control w-full">
-          <span class="label-text text-sm">Owner</span>
+          <span class="label-text text-sm">{gettext("Owner")}</span>
           <select name="application[owner_id]" class="select select-bordered w-full" required>
-            <option value="">— pick owner —</option>
+            <option value="">{gettext("— pick owner —")}</option>
             <%= for o <- @owners do %>
               <option value={o.id} selected={Ecto.Changeset.get_field(@changeset, :owner_id) == o.id}>
                 {o.email} ({o.role})
@@ -152,7 +154,7 @@ defmodule OwlGateWeb.Admin.ApplicationLive.Form do
             checked={Ecto.Changeset.get_field(@changeset, :active) != false}
             class="checkbox checkbox-sm"
           />
-          <span class="label-text">Active</span>
+          <span class="label-text">{gettext("Active")}</span>
         </label>
 
         <label class="label cursor-pointer justify-start gap-3">
@@ -164,10 +166,10 @@ defmodule OwlGateWeb.Admin.ApplicationLive.Form do
             checked={Ecto.Changeset.get_field(@changeset, :requires_mfa) == true}
             class="checkbox checkbox-sm"
           />
-          <span class="label-text">Requires MFA</span>
+          <span class="label-text">{gettext("Requires MFA")}</span>
         </label>
 
-        <button type="submit" class="btn btn-primary">Save</button>
+        <button type="submit" class="btn btn-primary">{gettext("Save")}</button>
       </.form>
     </.operator_shell>
     """

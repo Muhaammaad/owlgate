@@ -22,4 +22,9 @@ defmodule OwlGateWeb.Gettext do
   See the [Gettext Docs](https://hexdocs.pm/gettext) for detailed usage.
   """
   use Gettext.Backend, otp_app: :owlgate
+
+  @default_locale "en"
+
+  def default_locale, do: @default_locale
+  def supported_locales, do: Gettext.known_locales(__MODULE__)
 end

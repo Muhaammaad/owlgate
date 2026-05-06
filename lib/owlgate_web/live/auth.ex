@@ -11,6 +11,8 @@ defmodule OwlGateWeb.Live.Auth do
     router: OwlGateWeb.Router,
     statics: OwlGateWeb.static_paths()
 
+  use Gettext, backend: OwlGateWeb.Gettext
+
   alias OwlGate.Accounts
   alias OwlGate.Policy.AdminPolicy
 
@@ -23,7 +25,7 @@ defmodule OwlGateWeb.Live.Auth do
       nil ->
         {:halt,
          socket
-         |> Phoenix.LiveView.put_flash(:error, "Sign in to continue.")
+         |> Phoenix.LiveView.put_flash(:error, gettext("Sign in to continue."))
          |> redirect(to: ~p"/login")}
 
       %Accounts.User{} = user ->
@@ -36,7 +38,7 @@ defmodule OwlGateWeb.Live.Auth do
       nil ->
         {:halt,
          socket
-         |> Phoenix.LiveView.put_flash(:error, "Sign in to continue.")
+         |> Phoenix.LiveView.put_flash(:error, gettext("Sign in to continue."))
          |> redirect(to: ~p"/login")}
 
       %Accounts.User{} = user ->
@@ -45,7 +47,7 @@ defmodule OwlGateWeb.Live.Auth do
         else
           {:halt,
            socket
-           |> Phoenix.LiveView.put_flash(:error, "Admins only.")
+           |> Phoenix.LiveView.put_flash(:error, gettext("Admins only."))
            |> redirect(to: ~p"/dashboard")}
         end
     end

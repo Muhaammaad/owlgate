@@ -9,9 +9,9 @@ defmodule OwlGateWeb.AuditLive.Index do
   @impl true
   def mount(_params, _session, socket) do
     entity_options = [
-      {"", "Any entity"},
-      {Constants.entity_access_request(), "Access request"},
-      {Constants.entity_access_grant(), "Access grant"}
+      {"", gettext("Any entity")},
+      {Constants.entity_access_request(), gettext("Access request")},
+      {Constants.entity_access_grant(), gettext("Access grant")}
     ]
 
     socket =
@@ -68,7 +68,7 @@ defmodule OwlGateWeb.AuditLive.Index do
       wrapper_class="space-y-8"
     >
       <.operator_page_header
-        title="Audit events"
+        title={gettext("Audit events")}
         subtitle={audit_page_subtitle(@current_user)}
       />
 
@@ -85,9 +85,9 @@ defmodule OwlGateWeb.AuditLive.Index do
 
   defp audit_page_subtitle(user) do
     if AccessPolicy.employee_data_scope?(user) do
-      "Your activity and access events (latest 250 rows shown)."
+      gettext("Your activity and access events (latest 250 rows shown).")
     else
-      "Immutable log of privileged transitions for all users (latest 250 rows shown)."
+      gettext("Immutable log of privileged transitions for all users (latest 250 rows shown).")
     end
   end
 end

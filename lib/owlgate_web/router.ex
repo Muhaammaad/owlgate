@@ -10,6 +10,7 @@ defmodule OwlGateWeb.Router do
   pipeline :browser do
     plug :accepts, ["html"]
     plug :fetch_session
+    plug OwlGateWeb.Plugs.SetLocale
     plug :fetch_live_flash
     plug :put_root_layout, html: {OwlGateWeb.Layouts, :root}
     plug :protect_from_forgery
@@ -36,6 +37,7 @@ defmodule OwlGateWeb.Router do
   scope "/", OwlGateWeb do
     pipe_through :browser
 
+    get "/locale/:locale", LocaleController, :switch
     get "/", PageController, :home
 
     get "/login", UserSessionController, :new
@@ -46,7 +48,10 @@ defmodule OwlGateWeb.Router do
     post "/register", UserRegistrationController, :create
 
     live_session :operator,
-      on_mount: [{OwlGateWeb.Live.Auth, :require_authenticated_user}] do
+      on_mount: [
+        {OwlGateWeb.Live.Locale, :default},
+        {OwlGateWeb.Live.Auth, :require_authenticated_user}
+      ] do
       live "/dashboard", DashboardLive
       live "/access-requests", AccessRequestLive.Index
       live "/access-requests/:id", AccessRequestLive.Show
@@ -59,7 +64,7 @@ defmodule OwlGateWeb.Router do
     pipe_through :browser
 
     live_session :admin,
-      on_mount: [{OwlGateWeb.Live.Auth, :require_admin}] do
+      on_mount: [{OwlGateWeb.Live.Locale, :default}, {OwlGateWeb.Live.Auth, :require_admin}] do
       live "/users", UserLive.Index
       live "/users/new", UserLive.Form, :new
       live "/users/:id/edit", UserLive.Form, :edit

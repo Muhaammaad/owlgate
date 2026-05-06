@@ -1,5 +1,6 @@
 defmodule OwlGateWeb.Live.StatusFilter do
   @moduledoc "Parses `<select>` status values against an allowed atom list."
+  use Gettext, backend: OwlGateWeb.Gettext
 
   @type status_atom :: atom()
 
@@ -14,7 +15,7 @@ defmodule OwlGateWeb.Live.StatusFilter do
       {:ok, nil}
     else
       case Enum.find(allowed, &(Atom.to_string(&1) == raw)) do
-        nil -> {:error, "Invalid status filter."}
+        nil -> {:error, gettext("Invalid status filter.")}
         atom -> {:ok, atom}
       end
     end

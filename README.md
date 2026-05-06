@@ -31,6 +31,14 @@ Optional: `PORT`, `POOL_SIZE`, `PUBLIC_BASE_URL`, `ECTO_IPV6`, `PHX_SERVER`, `DN
 
 CI/CD and deployment options are outlined in **[`docs/DEPLOYMENT_AND_CI.md`](./docs/DEPLOYMENT_AND_CI.md)**.
 
+### Language (English/German)
+
+- Supported locales: `en`, `de`
+- Switch language by visiting:
+  - `/locale/en`
+  - `/locale/de`
+- Locale is persisted in the browser session and applies to controllers + LiveView.
+
 ## Run locally
 
 ```bash
@@ -45,13 +53,13 @@ Dev-only routes (when enabled): Live Dashboard at `/dev/dashboard`, Swoosh mailb
 
 Session-authenticated JSON endpoints mirror the LiveView flows. Sign in via the browser (or any client that preserves the session cookie), then call:
 
-| Method | Path                               | Notes                                                                                                     |
-| ------ | ---------------------------------- | --------------------------------------------------------------------------------------------------------- |
-| POST   | `/api/access-requests`             | Body: `application_id`, `reason`, optional `subject_user_id` (admins). Rate limited per IP (Hammer).      |
-| POST   | `/api/access-requests/:id/approve` | Reviewer (manager/admin).                                                                                 |
-| POST   | `/api/access-requests/:id/deny`    | Body: optional `reason`. Reviewer.                                                                        |
-| POST   | `/api/access-grants/:id/revoke`    | Reviewer.                                                                                                 |
-| GET    | `/api/audit-events`                | Query: `action`, `entity_type`, `limit` (1–500). Employees see a scoped feed; managers/admins see global. |
+| Method | Path | Notes |
+| --- | --- | --- |
+| POST | `/api/access-requests` | Body: `application_id`, `reason`, optional `subject_user_id` (admins). Rate limited per IP (Hammer). |
+| POST | `/api/access-requests/:id/approve` | Reviewer (manager/admin). |
+| POST | `/api/access-requests/:id/deny` | Body: optional `reason`. Reviewer. |
+| POST | `/api/access-grants/:id/revoke` | Reviewer. |
+| GET | `/api/audit-events` | Query: `action`, `entity_type`, `limit` (1–500). Employees see a scoped feed; managers/admins see global. |
 
 Send `Accept: application/json` and `Content-Type: application/json` where applicable. **State-changing requests (POST)** use the same **`protect_from_forgery`** plug as HTML: send header **`x-csrf-token`** with the value from the layout meta tag `<meta name="csrf-token" content="...">` (or `X-CSRF-Token`). `GET /api/audit-events` does not require the token.
 
@@ -119,7 +127,7 @@ mix ci
 
 CI workflow: [`.github/workflows/ci.yml`](./.github/workflows/ci.yml) (PostgreSQL 16 service, `mix ci`).
 
-Misc: `mix credo`, `mix sobelow_ci` (Sobelow with [`.sobelow-conf`](./.sobelow-conf)).
+Misc: `mix credo`, `mix sobelow_ci` (Sobelow with [`.sobelow-conf`](./.sobelow-conf)). **Dialyzer** is intentionally not wired (heavy); add later if desired.
 
 ## Learn more
 
