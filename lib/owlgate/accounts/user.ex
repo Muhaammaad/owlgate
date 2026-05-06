@@ -39,7 +39,9 @@ defmodule OwlGate.Accounts.User do
   def registration_form_changeset(user \\ %__MODULE__{}, attrs \\ %{}) do
     user
     |> cast(attrs, [:email, :name, :password, :role])
-    |> update_change(:email, fn e -> if is_binary(e), do: String.downcase(String.trim(e)), else: e end)
+    |> update_change(:email, fn e ->
+      if is_binary(e), do: String.downcase(String.trim(e)), else: e
+    end)
   end
 
   @doc "Public self-registration insert changeset."

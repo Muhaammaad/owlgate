@@ -105,7 +105,11 @@ defmodule OwlGateWeb.GrantLive.Index do
 
       <div class="flex flex-wrap gap-3 items-center justify-between">
         <h2 class="font-medium sr-only">Filter</h2>
-        <.status_select_filter form_id="grant-filter-form" statuses={Constants.grant_statuses()} filter_status={@filter_status} />
+        <.status_select_filter
+          form_id="grant-filter-form"
+          statuses={Constants.grant_statuses()}
+          filter_status={@filter_status}
+        />
       </div>
 
       <.grants_table grants={@grants} can_revoke?={@can_revoke?} />

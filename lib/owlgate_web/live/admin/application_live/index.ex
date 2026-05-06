@@ -27,7 +27,11 @@ defmodule OwlGateWeb.Admin.ApplicationLive.Index do
 
               {:error, reason} ->
                 {:noreply,
-                 put_flash(socket, :error, "Cannot delete (#{inspect(reason)}). Remove requests/grants first.")}
+                 put_flash(
+                   socket,
+                   :error,
+                   "Cannot delete (#{inspect(reason)}). Remove requests/grants first."
+                 )}
             end
         end
 
@@ -50,7 +54,9 @@ defmodule OwlGateWeb.Admin.ApplicationLive.Index do
     >
       <.operator_page_header title="Apps" subtitle="Define apps employees can request access to.">
         <:actions>
-          <.link navigate={~p"/admin/applications/new"} class="btn btn-primary btn-sm">New application</.link>
+          <.link navigate={~p"/admin/applications/new"} class="btn btn-primary btn-sm">
+            New application
+          </.link>
         </:actions>
       </.operator_page_header>
 

@@ -102,7 +102,10 @@ defmodule OwlGateWeb.Admin.ApplicationLive.Form do
       current_user={@current_user}
       wrapper_class="space-y-8 max-w-xl"
     >
-      <.operator_page_header title={@page_title} subtitle="Slug is normalized to lowercase kebab-case.">
+      <.operator_page_header
+        title={@page_title}
+        subtitle="Slug is normalized to lowercase kebab-case."
+      >
         <:actions>
           <.link navigate={~p"/admin/applications"} class="btn btn-ghost btn-sm">Back</.link>
         </:actions>

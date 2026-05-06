@@ -196,7 +196,10 @@ defmodule OwlGateWeb.AccessRequestLive.Show do
 
       <.access_request_review_panel can_review_pending?={@can_review_pending?} />
 
-      <.access_request_grant_admin_panel grant={@grant} show_admin_revoke?={@show_admin_revoke_grant?} />
+      <.access_request_grant_admin_panel
+        grant={@grant}
+        show_admin_revoke?={@show_admin_revoke_grant?}
+      />
 
       <div class="flex flex-wrap gap-3">
         <.link navigate={~p"/access-requests"} class="btn btn-ghost btn-sm">

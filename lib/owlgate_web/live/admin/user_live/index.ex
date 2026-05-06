@@ -26,8 +26,7 @@ defmodule OwlGateWeb.Admin.UserLive.Index do
                  |> refresh()}
 
               {:error, reason} ->
-                {:noreply,
-                 put_flash(socket, :error, "Cannot delete user (#{inspect(reason)}).")}
+                {:noreply, put_flash(socket, :error, "Cannot delete user (#{inspect(reason)}).")}
             end
         end
 
@@ -75,7 +74,7 @@ defmodule OwlGateWeb.Admin.UserLive.Index do
                 <td class="font-mono text-xs">{u.email}</td>
                 <td>{u.name}</td>
                 <td><span class="badge badge-ghost">{u.role}</span></td>
-                <td class="text-xs">{u.manager && u.manager.email || "—"}</td>
+                <td class="text-xs">{(u.manager && u.manager.email) || "—"}</td>
                 <td>{if u.mfa_required, do: "yes", else: "no"}</td>
                 <td class="flex flex-wrap gap-1">
                   <.link navigate={~p"/admin/users/#{u.id}/edit"} class="btn btn-ghost btn-xs">

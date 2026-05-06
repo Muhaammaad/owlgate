@@ -20,8 +20,13 @@ defmodule OwlGateWeb.Api.JsonHelpers do
   defp map_reason(:forbidden), do: {:forbidden, %{error: "forbidden"}}
   defp map_reason(:invalid_status), do: {:unprocessable_entity, %{error: "invalid_status"}}
   defp map_reason(:duplicate_request), do: {:conflict, %{error: "duplicate_request"}}
-  defp map_reason(:already_has_active_grant), do: {:conflict, %{error: "already_has_active_grant"}}
-  defp map_reason(:self_approval_not_allowed), do: {:forbidden, %{error: "self_approval_not_allowed"}}
+
+  defp map_reason(:already_has_active_grant),
+    do: {:conflict, %{error: "already_has_active_grant"}}
+
+  defp map_reason(:self_approval_not_allowed),
+    do: {:forbidden, %{error: "self_approval_not_allowed"}}
+
   defp map_reason(:high_risk_requires_owner_or_admin),
     do: {:forbidden, %{error: "high_risk_requires_owner_or_admin"}}
 

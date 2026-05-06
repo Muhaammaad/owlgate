@@ -115,8 +115,13 @@ defmodule OwlGateWeb.AccessRequestLive.Index do
 
   defp create_message(:forbidden), do: "You cannot request access for this application."
   defp create_message(:inactive_application), do: "That application is inactive."
-  defp create_message(:duplicate_request), do: "An open access request already exists for this user and application."
-  defp create_message(:already_has_active_grant), do: "This user already has active access for this application."
+
+  defp create_message(:duplicate_request),
+    do: "An open access request already exists for this user and application."
+
+  defp create_message(:already_has_active_grant),
+    do: "This user already has active access for this application."
+
   defp create_message(:subject_user_required), do: "Choose which user the access is for."
   defp create_message(:subject_user_not_found), do: "That user no longer exists."
   defp create_message(other), do: "Unable to create request: #{inspect(other)}"
@@ -177,7 +182,11 @@ defmodule OwlGateWeb.AccessRequestLive.Index do
       <section>
         <div class="flex flex-wrap gap-3 items-center justify-between mb-3">
           <h2 class="font-medium">{access_requests_table_heading(@current_user)}</h2>
-          <.status_select_filter form_id="filter-form" statuses={Constants.request_statuses()} filter_status={@filter_status} />
+          <.status_select_filter
+            form_id="filter-form"
+            statuses={Constants.request_statuses()}
+            filter_status={@filter_status}
+          />
         </div>
 
         <.access_requests_table requests={@requests} />

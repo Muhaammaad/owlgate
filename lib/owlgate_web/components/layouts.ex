@@ -62,7 +62,10 @@ defmodule OwlGateWeb.Layouts do
         </a>
 
         <%= if @current_user do %>
-          <nav class="hidden lg:flex flex-row flex-wrap items-center gap-1 pl-1 border-l border-base-300/60 ml-1" aria-label="Main">
+          <nav
+            class="hidden lg:flex flex-row flex-wrap items-center gap-1 pl-1 border-l border-base-300/60 ml-1"
+            aria-label="Main"
+          >
             <.link navigate={~p"/dashboard"} class="btn btn-ghost btn-sm">Dashboard</.link>
             <.link navigate={~p"/access-requests"} class="btn btn-ghost btn-sm">Requests</.link>
             <.link navigate={~p"/grants"} class="btn btn-ghost btn-sm">Grants</.link>

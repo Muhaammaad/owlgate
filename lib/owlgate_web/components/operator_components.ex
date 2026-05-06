@@ -153,7 +153,9 @@ defmodule OwlGateWeb.OperatorComponents do
               <td class="text-sm">
                 <%= if r.reviewed_by do %>
                   <span class="font-medium">{r.reviewed_by.email}</span>
-                  <span class="block text-xs text-base-content/60">{reviewer_action_hint(r.status)}</span>
+                  <span class="block text-xs text-base-content/60">
+                    {reviewer_action_hint(r.status)}
+                  </span>
                 <% else %>
                   <span class="text-base-content/50">—</span>
                 <% end %>
@@ -300,7 +302,9 @@ defmodule OwlGateWeb.OperatorComponents do
             <span class="label-text text-sm">After submit</span>
             <select name="admin_submit_flow" class="select select-bordered w-full">
               <option value="pending_review" selected>Leave pending — normal review queue</option>
-              <option value="approve_immediately">Approve now — queue provisioning (same as review action)</option>
+              <option value="approve_immediately">
+                Approve now — queue provisioning (same as review action)
+              </option>
             </select>
             <span class="label-text-alt text-xs text-base-content/60 leading-snug pt-1">
               Requests are always inserted as <span class="font-medium">pending</span>. “Approve now” runs the standard approval operation next so audit entries stay consistent — not a free-form status assignment.
@@ -309,7 +313,11 @@ defmodule OwlGateWeb.OperatorComponents do
           <%= if @form_error do %>
             <p class="text-sm text-error">{@form_error}</p>
           <% end %>
-          <button type="submit" disabled={not @submit_enabled?} class="btn btn-primary btn-sm disabled:opacity-50">
+          <button
+            type="submit"
+            disabled={not @submit_enabled?}
+            class="btn btn-primary btn-sm disabled:opacity-50"
+          >
             Submit request
           </button>
         </form>
@@ -386,8 +394,16 @@ defmodule OwlGateWeb.OperatorComponents do
       </dl>
 
       <div :if={@grant.status == :active} class="space-y-2">
-        <div :if={@show_admin_revoke?} class="flex flex-col gap-2 sm:flex-row sm:items-center sm:flex-wrap">
-          <button type="button" phx-click="revoke_grant" phx-value-id={@grant.id} class="btn btn-warning btn-sm">
+        <div
+          :if={@show_admin_revoke?}
+          class="flex flex-col gap-2 sm:flex-row sm:items-center sm:flex-wrap"
+        >
+          <button
+            type="button"
+            phx-click="revoke_grant"
+            phx-value-id={@grant.id}
+            class="btn btn-warning btn-sm"
+          >
             Queue revoke
           </button>
           <.link navigate={~p"/grants"} class="btn btn-outline btn-sm">
@@ -403,7 +419,8 @@ defmodule OwlGateWeb.OperatorComponents do
       </div>
 
       <p :if={@grant.status != :active} class="text-sm text-base-content/70">
-        Grant status is <span class="font-medium">{@grant.status}</span> — revoke only applies while the grant is active.
+        Grant status is <span class="font-medium">{@grant.status}</span>
+        — revoke only applies while the grant is active.
       </p>
     </section>
     """
@@ -413,7 +430,10 @@ defmodule OwlGateWeb.OperatorComponents do
 
   def access_request_denial_notice(assigns) do
     ~H"""
-    <div :if={@request.status == :denied and @request.denial_reason} class="rounded-box border border-warning/40 bg-warning/10 p-3 text-sm">
+    <div
+      :if={@request.status == :denied and @request.denial_reason}
+      class="rounded-box border border-warning/40 bg-warning/10 p-3 text-sm"
+    >
       <strong>Denial reason:</strong>
       <span class="ml-2">{@request.denial_reason}</span>
     </div>
@@ -439,7 +459,12 @@ defmodule OwlGateWeb.OperatorComponents do
         <form id="deny-request" phx-submit="deny" class="grid gap-2 max-w-lg">
           <label class="form-control">
             <span class="label-text text-sm">Denial reason</span>
-            <textarea name="reason" required minlength="3" class="textarea textarea-bordered textarea-sm"/>
+            <textarea
+              name="reason"
+              required
+              minlength="3"
+              class="textarea textarea-bordered textarea-sm"
+            />
           </label>
           <button type="submit" class="btn btn-error btn-sm w-fit">
             Deny request

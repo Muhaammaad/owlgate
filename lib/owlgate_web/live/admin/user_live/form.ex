@@ -101,7 +101,10 @@ defmodule OwlGateWeb.Admin.UserLive.Form do
       current_user={@current_user}
       wrapper_class="space-y-8 max-w-xl"
     >
-      <.operator_page_header title={@page_title} subtitle="Password required on create; optional on update (leave blank to keep).">
+      <.operator_page_header
+        title={@page_title}
+        subtitle="Password required on create; optional on update (leave blank to keep)."
+      >
         <:actions>
           <.link navigate={~p"/admin/users"} class="btn btn-ghost btn-sm">Back</.link>
         </:actions>

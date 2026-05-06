@@ -6,6 +6,7 @@ defmodule OwlGate.Access do
   """
 
   alias OwlGate.Access.Application
+
   alias OwlGate.Access.Operations.{
     ActivateGrant,
     ApproveRequest,
@@ -15,6 +16,7 @@ defmodule OwlGate.Access do
     TransitionGrantStatus,
     TransitionRequestStatus
   }
+
   alias OwlGate.Accounts.User
   alias OwlGate.Access.{AccessGrant, AccessRequest, Constants}
   alias OwlGate.Workers.{ProvisionAccessJob, RevokeAccessJob}
@@ -207,11 +209,19 @@ defmodule OwlGate.Access do
   end
 
   @doc "Denies a pending request."
-  def deny_request(%User{} = actor, request_id, reason \\ nil), do: DenyRequest.run(actor, request_id, reason)
+  def deny_request(%User{} = actor, request_id, reason \\ nil),
+    do: DenyRequest.run(actor, request_id, reason)
 
   @doc "Transitions approved request into provisioning state."
   def mark_provisioning(%User{} = actor, request_id),
-    do: TransitionRequestStatus.run(actor, request_id, :approved, :provisioning, "access_request.provisioning")
+    do:
+      TransitionRequestStatus.run(
+        actor,
+        request_id,
+        :approved,
+        :provisioning,
+        "access_request.provisioning"
+      )
 
   @doc "Creates an active grant for a provisioning request."
   def activate_grant(%User{} = actor, request_id, external_ref \\ nil),
@@ -231,7 +241,14 @@ defmodule OwlGate.Access do
 
   @doc "Marks provisioning as failed."
   def fail_request(%User{} = actor, request_id),
-    do: TransitionRequestStatus.run(actor, request_id, :provisioning, :failed, "access_request.failed")
+    do:
+      TransitionRequestStatus.run(
+        actor,
+        request_id,
+        :provisioning,
+        :failed,
+        "access_request.failed"
+      )
 
   @doc false
   def enqueue_provision_job(actor_id, request_id, opts \\ %{}) do
@@ -261,4 +278,3 @@ defmodule OwlGate.Access do
     |> Oban.insert()
   end
 end
-

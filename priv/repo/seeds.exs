@@ -62,9 +62,7 @@ defmodule OwlGate.Seeds do
 
       nil ->
         {:ok, user} =
-          Accounts.create_user(
-            Map.merge(attrs, %{email: normalized, manager_id: nil})
-          )
+          Accounts.create_user(Map.merge(attrs, %{email: normalized, manager_id: nil}))
 
         user
     end
