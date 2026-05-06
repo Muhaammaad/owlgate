@@ -4,6 +4,7 @@ defmodule OwlGateWeb.AuditLive.Index do
 
   alias OwlGate.Audit
   alias OwlGate.Access.Constants
+  alias OwlGate.Policy.AccessPolicy
 
   @impl true
   def mount(_params, _session, socket) do
@@ -40,10 +41,17 @@ defmodule OwlGateWeb.AuditLive.Index do
     action = trim_to_nil(socket.assigns.filter_action)
     entity = trim_to_nil(socket.assigns.filter_entity)
 
+    user = socket.assigns.current_user
+
     opts =
       [limit: 250]
       |> Keyword.merge(if action, do: [action: action], else: [])
       |> Keyword.merge(if entity, do: [entity_type: entity], else: [])
+
+    opts =
+      if AccessPolicy.employee_data_scope?(user),
+        do: Keyword.put(opts, :viewer_user_id, user.id),
+        else: opts
 
     assign(socket, :events, Audit.list_events(opts))
   end
@@ -57,17 +65,12 @@ defmodule OwlGateWeb.AuditLive.Index do
     <.operator_shell
       flash={@flash}
       current_user={@current_user}
-      dev_routes={Application.get_env(:owlgate, :dev_routes, false)}
       wrapper_class="space-y-8"
     >
       <.operator_page_header
         title="Audit events"
-        subtitle="Immutable log of privileged transitions (latest 250 rows shown)."
-      >
-        <:actions>
-          <.operator_quick_links omit={[:audit]} />
-        </:actions>
-      </.operator_page_header>
+        subtitle={audit_page_subtitle(@current_user)}
+      />
 
       <.audit_filter_form
         filter_action={@filter_action}
@@ -78,5 +81,13 @@ defmodule OwlGateWeb.AuditLive.Index do
       <.audit_events_table events={@events} />
     </.operator_shell>
     """
+  end
+
+  defp audit_page_subtitle(user) do
+    if AccessPolicy.employee_data_scope?(user) do
+      "Your activity and access events (latest 250 rows shown)."
+    else
+      "Immutable log of privileged transitions for all users (latest 250 rows shown)."
+    end
   end
 end

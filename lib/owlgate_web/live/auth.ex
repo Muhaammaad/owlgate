@@ -12,6 +12,7 @@ defmodule OwlGateWeb.Live.Auth do
     statics: OwlGateWeb.static_paths()
 
   alias OwlGate.Accounts
+  alias OwlGate.Policy.AdminPolicy
 
   def on_mount(:assign_current_user, _params, session, socket) do
     {:cont, assign(socket, :current_user, user_from_session(session))}
@@ -20,10 +21,33 @@ defmodule OwlGateWeb.Live.Auth do
   def on_mount(:require_authenticated_user, _params, session, socket) do
     case user_from_session(session) do
       nil ->
-        {:halt, redirect(socket, to: ~p"/")}
+        {:halt,
+         socket
+         |> Phoenix.LiveView.put_flash(:error, "Sign in to continue.")
+         |> redirect(to: ~p"/login")}
 
       %Accounts.User{} = user ->
         {:cont, assign(socket, :current_user, user)}
+    end
+  end
+
+  def on_mount(:require_admin, _params, session, socket) do
+    case user_from_session(session) do
+      nil ->
+        {:halt,
+         socket
+         |> Phoenix.LiveView.put_flash(:error, "Sign in to continue.")
+         |> redirect(to: ~p"/login")}
+
+      %Accounts.User{} = user ->
+        if AdminPolicy.admin?(user) do
+          {:cont, assign(socket, :current_user, user)}
+        else
+          {:halt,
+           socket
+           |> Phoenix.LiveView.put_flash(:error, "Admins only.")
+           |> redirect(to: ~p"/dashboard")}
+        end
     end
   end
 

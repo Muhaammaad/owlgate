@@ -1,0 +1,78 @@
+<Layouts.flash_group flash={@flash} />
+
+<div class="min-h-[70vh] px-4 py-16 sm:px-6 lg:px-8">
+  <div class="mx-auto max-w-md space-y-6">
+    <div class="flex justify-between items-center gap-4">
+      <h1 class="text-2xl font-semibold">Sign in</h1>
+      <Layouts.theme_toggle />
+    </div>
+
+    <p class="text-sm text-base-content/70">
+      Run <code class="text-xs font-mono">mix run priv/repo/seeds.exs</code> after migrate, or register if no accounts exist yet.
+    </p>
+
+    <div class="rounded-box border border-base-300 bg-base-200/40 p-4 text-sm text-base-content/80 space-y-2">
+      <p class="font-medium text-base-content">Demo accounts (password <code class="text-xs font-mono">Password123!</code>)</p>
+      <ul class="list-disc list-inside space-y-1 text-xs sm:text-sm">
+        <li><span class="font-medium">Admin</span> — <code class="font-mono">admin@owlgate.local</code></li>
+        <li><span class="font-medium">Manager</span> — <code class="font-mono">manager@owlgate.local</code></li>
+        <li><span class="font-medium">Employee</span> — <code class="font-mono">employee@owlgate.local</code></li>
+      </ul>
+    </div>
+
+    <%!-- Login autofill & “Save Password?” come from Safari / macOS Passwords / extensions,
+          not from the server. autocomplete="off" is often ignored for password fields.
+          readonly-until-focus reduces load-time injection; data-* hints ask common extensions to skip.
+          Apple’s save sheet: Settings → Passwords / Safari (sites cannot disable it). --%>
+    <form
+      action={~p"/login"}
+      method="post"
+      autocomplete="off"
+      data-1p-ignore="true"
+      data-lpignore="true"
+      data-bwignore
+      class="rounded-box border border-base-300 bg-base-200/30 p-6 space-y-4"
+    >
+      <input type="hidden" name="_csrf_token" value={@csrf_token} />
+
+      <label class="form-control w-full">
+        <span class="label-text text-sm">Email</span>
+        <input
+          type="email"
+          name="user[email]"
+          id="login-email"
+          required
+          autocomplete="off"
+          autocapitalize="none"
+          spellcheck="false"
+          placeholder="you@example.com"
+          readonly
+          onfocus="this.removeAttribute('readonly')"
+          class="input input-bordered w-full"
+        />
+      </label>
+
+      <label class="form-control w-full">
+        <span class="label-text text-sm">Password</span>
+        <input
+          type="password"
+          name="user[password]"
+          id="login-password"
+          required
+          autocomplete="off"
+          placeholder="Enter your password"
+          readonly
+          onfocus="this.removeAttribute('readonly')"
+          class="input input-bordered w-full"
+        />
+      </label>
+
+      <button type="submit" class="btn btn-primary w-full">Sign in</button>
+    </form>
+
+    <div class="flex flex-wrap gap-3 text-sm">
+      <.link navigate={~p"/"} class="link link-primary">Home</.link>
+      <.link navigate={~p"/register"} class="link link-primary">Create account</.link>
+    </div>
+  </div>
+</div>

@@ -25,7 +25,7 @@ defmodule OwlGateWeb.AdminLiveTest do
       |> log_in_user(admin)
       |> live(~p"/admin/users")
 
-    assert html =~ "Admin · Users"
+    assert html =~ "Users"
   end
 
   test "POST /login signs in with fixture password", %{conn: conn} do

@@ -3,7 +3,8 @@ defmodule OwlGateWeb.AccessRequestLive.Show do
   use OwlGateWeb, :live_view
 
   alias OwlGate.Access
-  alias OwlGate.Policy.AccessPolicy
+  alias OwlGate.Access.AccessGrant
+  alias OwlGate.Policy.{AccessPolicy, AdminPolicy}
 
   @impl true
   def mount(%{"id" => id_param}, _session, socket) do
@@ -42,10 +43,21 @@ defmodule OwlGateWeb.AccessRequestLive.Show do
       {:ok, request} ->
         can_review_pending = review_allowed?(actor, request)
 
+        grant =
+          case Access.fetch_grant_by_access_request_id(request.id) do
+            {:ok, g} -> g
+            {:error, :not_found} -> nil
+          end
+
+        show_admin_revoke? =
+          AdminPolicy.admin?(actor) && grant && grant.status == :active
+
         {:ok,
          socket
          |> assign(:request_id, id)
          |> assign(:request, request)
+         |> assign(:grant, grant)
+         |> assign(:show_admin_revoke_grant?, show_admin_revoke?)
          |> assign(:can_review_pending?, can_review_pending)
          |> assign(:action_error, nil)}
 
@@ -79,6 +91,45 @@ defmodule OwlGateWeb.AccessRequestLive.Show do
      actor
      |> Access.deny_request(id, reason)
      |> fold_deny(socket, id)}
+  end
+
+  def handle_event("revoke_grant", %{"id" => raw_id}, socket) do
+    actor = socket.assigns.current_user
+
+    if not AdminPolicy.admin?(actor) do
+      {:noreply, assign(socket, :action_error, "Only admins can queue revoke from this page.")}
+    else
+      req_id = socket.assigns.request_id
+
+      with {gid, _} <- Integer.parse(to_string(raw_id)),
+           {:ok, %AccessGrant{access_request_id: arid} = g} <- Access.fetch_grant(gid),
+           true <- arid == req_id,
+           {:ok, _} <- Access.request_revoke(actor, g.id),
+           {:ok, socket} <- reload_request(socket, req_id) do
+        {:noreply,
+         socket
+         |> assign(:action_error, nil)
+         |> put_flash(:info, "Revoke job queued.")}
+      else
+        :error ->
+          {:noreply, assign(socket, :action_error, "Invalid grant id.")}
+
+        false ->
+          {:noreply, assign(socket, :action_error, "That grant is not linked to this request.")}
+
+        {:error, :not_found} ->
+          {:noreply, assign(socket, :action_error, "Grant not found.")}
+
+        {:error, :forbidden} ->
+          {:noreply, assign(socket, :action_error, "You cannot revoke this grant.")}
+
+        {:error, :invalid_status} ->
+          {:noreply, assign(socket, :action_error, "Grant is not active.")}
+
+        {:error, _} = err ->
+          {:noreply, assign(socket, :action_error, "Unable to revoke: #{inspect(err)}")}
+      end
+    end
   end
 
   defp fold_approve({:ok, _}, socket, id) do
@@ -133,7 +184,6 @@ defmodule OwlGateWeb.AccessRequestLive.Show do
     <.operator_shell
       flash={@flash}
       current_user={@current_user}
-      dev_routes={Application.get_env(:owlgate, :dev_routes, false)}
       wrapper_class="space-y-6"
     >
       <.access_request_heading request={@request} />
@@ -146,12 +196,11 @@ defmodule OwlGateWeb.AccessRequestLive.Show do
 
       <.access_request_review_panel can_review_pending?={@can_review_pending?} />
 
-      <div class="flex gap-3">
+      <.access_request_grant_admin_panel grant={@grant} show_admin_revoke?={@show_admin_revoke_grant?} />
+
+      <div class="flex flex-wrap gap-3">
         <.link navigate={~p"/access-requests"} class="btn btn-ghost btn-sm">
           Back to list
-        </.link>
-        <.link navigate={~p"/dashboard"} class="btn btn-ghost btn-sm">
-          Dashboard
         </.link>
       </div>
     </.operator_shell>

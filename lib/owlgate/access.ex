@@ -6,7 +6,6 @@ defmodule OwlGate.Access do
   """
 
   alias OwlGate.Access.Application
-
   alias OwlGate.Access.Operations.{
     ActivateGrant,
     ApproveRequest,
@@ -16,7 +15,6 @@ defmodule OwlGate.Access do
     TransitionGrantStatus,
     TransitionRequestStatus
   }
-
   alias OwlGate.Accounts.User
   alias OwlGate.Access.{AccessGrant, AccessRequest, Constants}
   alias OwlGate.Workers.{ProvisionAccessJob, RevokeAccessJob}
@@ -88,15 +86,23 @@ defmodule OwlGate.Access do
   @doc """
   Aggregate counts by access request status and grant status for operator dashboards.
   """
-  @spec dashboard_snapshot() :: %{requests: map(), grants: map()}
-  def dashboard_snapshot do
+  @spec dashboard_snapshot(keyword()) :: %{requests: map(), grants: map()}
+  def dashboard_snapshot(opts \\ []) do
+    scope_user_id = Keyword.get(opts, :scope_user_id)
+
     %{
-      requests: counts_for_status(AccessRequest, Constants.request_statuses()),
-      grants: counts_for_status(AccessGrant, Constants.grant_statuses())
+      requests: counts_for_status(AccessRequest, Constants.request_statuses(), scope_user_id),
+      grants: counts_for_status(AccessGrant, Constants.grant_statuses(), scope_user_id)
     }
   end
 
-  defp counts_for_status(queryable, statuses) do
+  defp counts_for_status(queryable, statuses, scope_user_id) do
+    queryable =
+      case scope_user_id do
+        nil -> queryable
+        uid when is_integer(uid) -> where(queryable, [r], r.user_id == ^uid)
+      end
+
     rows =
       queryable
       |> group_by([r], r.status)
@@ -112,12 +118,20 @@ defmodule OwlGate.Access do
   @doc "Lists access requests with related users and applications."
   def list_access_requests(opts \\ []) do
     status = Keyword.get(opts, :status)
+    user_id = Keyword.get(opts, :user_id)
 
     AccessRequest
     |> order_by(desc: :inserted_at)
+    |> maybe_filter_requests_by_user(user_id)
     |> maybe_filter_requests(status)
     |> preload([:user, :application, :reviewed_by])
     |> Repo.all()
+  end
+
+  defp maybe_filter_requests_by_user(query, nil), do: query
+
+  defp maybe_filter_requests_by_user(query, user_id) when is_integer(user_id) do
+    where(query, [r], r.user_id == ^user_id)
   end
 
   defp maybe_filter_requests(query, nil), do: query
@@ -139,12 +153,20 @@ defmodule OwlGate.Access do
   """
   def list_grants(opts \\ []) do
     status = Keyword.get(opts, :status)
+    user_id = Keyword.get(opts, :user_id)
 
     AccessGrant
     |> order_by(desc: :updated_at)
+    |> maybe_filter_grants_by_user(user_id)
     |> maybe_filter_grants(status)
     |> preload([:user, :application, :access_request])
     |> Repo.all()
+  end
+
+  defp maybe_filter_grants_by_user(query, nil), do: query
+
+  defp maybe_filter_grants_by_user(query, user_id) when is_integer(user_id) do
+    where(query, [g], g.user_id == ^user_id)
   end
 
   defp maybe_filter_grants(query, nil), do: query
@@ -162,6 +184,16 @@ defmodule OwlGate.Access do
   end
 
   @doc """
+  Loads the grant created for an access request, if any (one grant per request).
+  """
+  def fetch_grant_by_access_request_id(request_id) do
+    case Repo.get_by(AccessGrant, access_request_id: request_id) do
+      nil -> {:error, :not_found}
+      grant -> {:ok, Repo.preload(grant, [:user, :application, :access_request])}
+    end
+  end
+
+  @doc """
   Creates an access request for the actor if policy and dedupe checks pass.
   """
   def create_request(%User{} = actor, attrs), do: CreateRequest.run(actor, attrs)
@@ -175,19 +207,11 @@ defmodule OwlGate.Access do
   end
 
   @doc "Denies a pending request."
-  def deny_request(%User{} = actor, request_id, reason \\ nil),
-    do: DenyRequest.run(actor, request_id, reason)
+  def deny_request(%User{} = actor, request_id, reason \\ nil), do: DenyRequest.run(actor, request_id, reason)
 
   @doc "Transitions approved request into provisioning state."
   def mark_provisioning(%User{} = actor, request_id),
-    do:
-      TransitionRequestStatus.run(
-        actor,
-        request_id,
-        :approved,
-        :provisioning,
-        "access_request.provisioning"
-      )
+    do: TransitionRequestStatus.run(actor, request_id, :approved, :provisioning, "access_request.provisioning")
 
   @doc "Creates an active grant for a provisioning request."
   def activate_grant(%User{} = actor, request_id, external_ref \\ nil),
@@ -207,14 +231,7 @@ defmodule OwlGate.Access do
 
   @doc "Marks provisioning as failed."
   def fail_request(%User{} = actor, request_id),
-    do:
-      TransitionRequestStatus.run(
-        actor,
-        request_id,
-        :provisioning,
-        :failed,
-        "access_request.failed"
-      )
+    do: TransitionRequestStatus.run(actor, request_id, :provisioning, :failed, "access_request.failed")
 
   @doc false
   def enqueue_provision_job(actor_id, request_id, opts \\ %{}) do
@@ -244,3 +261,4 @@ defmodule OwlGate.Access do
     |> Oban.insert()
   end
 end
+

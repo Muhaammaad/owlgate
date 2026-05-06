@@ -44,7 +44,7 @@ defmodule OwlGate.Seeds do
 
       Application: demo-portal (owner: admin)
 
-      Next: visit http://localhost:4000 → Sign in, then Dashboard / Requests. With dev_routes, /dev/session still works.
+      Next: visit http://localhost:4000 → Sign in, then Dashboard / Requests.
       """)
     end)
     |> case do
@@ -62,7 +62,9 @@ defmodule OwlGate.Seeds do
 
       nil ->
         {:ok, user} =
-          Accounts.create_user(Map.merge(attrs, %{email: normalized, manager_id: nil}))
+          Accounts.create_user(
+            Map.merge(attrs, %{email: normalized, manager_id: nil})
+          )
 
         user
     end

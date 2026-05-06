@@ -4,7 +4,8 @@ defmodule OwlGateWeb.AccessRequestLive.Index do
 
   alias OwlGate.Access
   alias OwlGate.Access.Constants
-  alias OwlGate.Policy.AccessPolicy
+  alias OwlGate.Accounts
+  alias OwlGate.Policy.{AccessPolicy, AdminPolicy}
   alias OwlGateWeb.FormHelpers
   alias OwlGateWeb.Live.StatusFilter
 
@@ -12,15 +13,22 @@ defmodule OwlGateWeb.AccessRequestLive.Index do
 
   @impl true
   def mount(_params, _session, socket) do
+    user = socket.assigns.current_user
+
     socket =
       socket
       |> assign(:filter_status, nil)
       |> assign(:form_error, nil)
+      |> assign(:subject_user_picker?, AdminPolicy.admin?(user))
+      |> assign(:subject_users, subject_users_for_picker(user))
       |> load_applications()
       |> load_requests()
 
     {:ok, socket}
   end
+
+  defp subject_users_for_picker(%{role: :admin}), do: Accounts.list_users()
+  defp subject_users_for_picker(_), do: []
 
   @impl true
   def handle_event("filter", params, socket) do
@@ -35,42 +43,98 @@ defmodule OwlGateWeb.AccessRequestLive.Index do
     {:noreply, load_requests(socket)}
   end
 
-  def handle_event("create", %{"reason" => reason, "application_id" => app_id}, socket) do
-    attrs = %{"application_id" => app_id, "reason" => String.trim(reason)}
+  def handle_event("create", params, socket) do
+    %{"reason" => reason, "application_id" => app_id} = params
 
-    {:noreply,
-     socket
-     |> apply_create(Access.create_request(socket.assigns.current_user, attrs))}
+    attrs =
+      %{"application_id" => app_id, "reason" => String.trim(reason)}
+      |> maybe_put_subject_user_param(socket.assigns.current_user, params)
+
+    result = Access.create_request(socket.assigns.current_user, attrs)
+
+    {:noreply, apply_create_result(socket, result, params)}
   end
 
-  defp apply_create(socket, {:ok, _request}) do
-    socket
-    |> put_flash(:info, "Access request submitted.")
-    |> assign(:form_error, nil)
-    |> load_requests()
+  defp maybe_put_subject_user_param(attrs, %{role: :admin}, params) do
+    case Map.get(params, "subject_user_id") do
+      nil -> attrs
+      "" -> attrs
+      id -> Map.put(attrs, "subject_user_id", id)
+    end
   end
 
-  defp apply_create(socket, {:error, %Ecto.Changeset{} = cs}) do
+  defp maybe_put_subject_user_param(attrs, _, _), do: attrs
+
+  defp apply_create_result(socket, {:ok, request}, params) do
+    actor = socket.assigns.current_user
+    flow = Map.get(params, "admin_submit_flow", "pending_review")
+
+    socket =
+      socket
+      |> assign(:form_error, nil)
+
+    socket =
+      if AdminPolicy.admin?(actor) && flow == "approve_immediately" do
+        case Access.approve_request(actor, request.id) do
+          {:ok, _} ->
+            put_flash(socket, :info, "Request created and approved; provisioning queued.")
+
+          {:error, reason} ->
+            socket
+            |> put_flash(:info, "Access request submitted as pending.")
+            |> put_flash(:error, quick_approve_error(reason))
+        end
+      else
+        put_flash(socket, :info, "Access request submitted.")
+      end
+
+    load_requests(socket)
+  end
+
+  defp apply_create_result(socket, {:error, %Ecto.Changeset{} = cs}, _params) do
     assign(socket, :form_error, FormHelpers.format_changeset_errors(cs))
   end
 
-  defp apply_create(socket, {:error, reason}) do
+  defp apply_create_result(socket, {:error, reason}, _params) do
     assign(socket, :form_error, create_message(reason))
   end
 
+  defp quick_approve_error(:forbidden), do: "Auto-approve was not allowed for this request."
+
+  defp quick_approve_error(:invalid_status),
+    do: "Could not approve — request was not in a pending state."
+
+  defp quick_approve_error(:self_approval_not_allowed),
+    do: "Could not approve — you cannot approve your own request when you are the requester."
+
+  defp quick_approve_error(:high_risk_requires_owner_or_admin),
+    do: "Could not approve — high-risk apps require the application owner or an admin."
+
+  defp quick_approve_error(other),
+    do: "Could not auto-approve: #{inspect(other)}"
+
   defp create_message(:forbidden), do: "You cannot request access for this application."
   defp create_message(:inactive_application), do: "That application is inactive."
-  defp create_message(:duplicate_request), do: "You already have an open request for this app."
-  defp create_message(:already_has_active_grant), do: "You already have active access."
+  defp create_message(:duplicate_request), do: "An open access request already exists for this user and application."
+  defp create_message(:already_has_active_grant), do: "This user already has active access for this application."
+  defp create_message(:subject_user_required), do: "Choose which user the access is for."
+  defp create_message(:subject_user_not_found), do: "That user no longer exists."
   defp create_message(other), do: "Unable to create request: #{inspect(other)}"
 
   defp load_requests(socket) do
+    user = socket.assigns.current_user
+
     opts =
       case socket.assigns.filter_status do
         nil -> []
         status when status in @filterable -> [status: status]
         _ -> []
       end
+
+    opts =
+      if AccessPolicy.employee_data_scope?(user),
+        do: Keyword.put(opts, :user_id, user.id),
+        else: opts
 
     assign(socket, :requests, Access.list_access_requests(opts))
   end
@@ -94,37 +158,47 @@ defmodule OwlGateWeb.AccessRequestLive.Index do
     <.operator_shell
       flash={@flash}
       current_user={@current_user}
-      dev_routes={Application.get_env(:owlgate, :dev_routes, false)}
       wrapper_class="space-y-8"
     >
       <.operator_page_header
         title="Access requests"
-        subtitle={"Create a request as #{@current_user.name} or open a row to review approvals."}
-      >
-        <:actions>
-          <.operator_quick_links omit={[:requests, :grants, :audit]} />
-        </:actions>
-      </.operator_page_header>
+        subtitle={access_requests_subtitle(@current_user)}
+      />
 
       <.new_access_request_form
         applications={@applications}
         form_error={@form_error}
         submit_enabled?={@submit_enabled?}
+        subject_user_picker?={@subject_user_picker?}
+        subject_users={@subject_users}
+        admin_submit_flow?={@subject_user_picker?}
       />
 
       <section>
         <div class="flex flex-wrap gap-3 items-center justify-between mb-3">
-          <h2 class="font-medium">All requests</h2>
-          <.status_select_filter
-            form_id="filter-form"
-            statuses={Constants.request_statuses()}
-            filter_status={@filter_status}
-          />
+          <h2 class="font-medium">{access_requests_table_heading(@current_user)}</h2>
+          <.status_select_filter form_id="filter-form" statuses={Constants.request_statuses()} filter_status={@filter_status} />
         </div>
 
         <.access_requests_table requests={@requests} />
       </section>
     </.operator_shell>
     """
+  end
+
+  defp access_requests_subtitle(%{role: :admin} = user) do
+    "Submit on behalf of someone (use Access for user below), or open any row to review. Signed in as #{user.name}."
+  end
+
+  defp access_requests_subtitle(user) do
+    if AccessPolicy.employee_data_scope?(user) do
+      "Submit access you need, or open one of your requests below."
+    else
+      "Create a request as #{user.name} or open a row to review approvals."
+    end
+  end
+
+  defp access_requests_table_heading(user) do
+    if AccessPolicy.employee_data_scope?(user), do: "My requests", else: "All requests"
   end
 end

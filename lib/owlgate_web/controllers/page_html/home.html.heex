@@ -39,20 +39,15 @@
         </.link>
         <%= if OwlGate.Policy.AdminPolicy.admin?(@current_user) do %>
           <.link navigate={~p"/admin/users"} class="btn btn-outline">
-            Admin · Users
+            Users
           </.link>
           <.link navigate={~p"/admin/applications"} class="btn btn-outline">
-            Admin · Applications
+            Apps
           </.link>
         <% end %>
       <% else %>
         <.link navigate={~p"/login"} class="btn btn-primary">Sign in</.link>
         <.link navigate={~p"/register"} class="btn btn-outline">Create account</.link>
-      <% end %>
-      <%= if Application.get_env(:owlgate, :dev_routes, false) do %>
-        <a href="/dev/session" class="btn btn-outline btn-secondary">
-          Dev sign-in
-        </a>
       <% end %>
     </div>
 
@@ -62,22 +57,22 @@
         ({@current_user.role}). Open Dashboard or Requests above.
       </p>
     <% else %>
-      <p class="rounded-box border border-base-300 bg-base-200/40 p-4 text-sm text-base-content/80">
-        Use <strong class="font-semibold">Sign in</strong>
-        with a seeded account after
-        <code class="text-xs font-mono">mix run priv/repo/seeds.exs</code>
-        (password shown in the seed summary). The first <strong>Register</strong>
-        user becomes admin when the database is empty.
-        <%= if Application.get_env(:owlgate, :dev_routes, false) do %>
-          In development you can still use <strong>Dev sign-in</strong>
-          to pick any user without a password.
-        <% end %>
+      <p class="rounded-box border border-base-300 bg-base-200/40 p-4 text-sm text-base-content/80 space-y-2">
+        <span class="block">
+          After <code class="text-xs font-mono">mix run priv/repo/seeds.exs</code>, sign in with password
+          <code class="text-xs font-mono">Password123!</code>:
+        </span>
+        <span class="block font-mono text-xs">
+          admin@owlgate.local · manager@owlgate.local · employee@owlgate.local
+        </span>
+        <span class="block pt-1">
+          The first <strong>Register</strong> user becomes admin when the database is empty.
+        </span>
       </p>
     <% end %>
 
     <p class="text-xs text-base-content/50">
-      Run <code class="font-mono">mix run priv/repo/seeds.exs</code>
-      after migrate if you need demo users and the demo-portal application.
+      Run <code class="font-mono">mix run priv/repo/seeds.exs</code> after migrate if you need demo users and the demo-portal application.
     </p>
   </div>
 </div>

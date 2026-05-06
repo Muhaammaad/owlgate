@@ -4,6 +4,7 @@ defmodule OwlGateWeb.DashboardLive do
 
   alias OwlGate.Access
   alias OwlGate.Access.Constants
+  alias OwlGate.Policy.AccessPolicy
 
   @impl true
   def mount(_params, _session, socket) do
@@ -16,7 +17,14 @@ defmodule OwlGateWeb.DashboardLive do
   end
 
   defp assign_snapshot(socket) do
-    snap = Access.dashboard_snapshot()
+    user = socket.assigns.current_user
+
+    opts =
+      if AccessPolicy.employee_data_scope?(user),
+        do: [scope_user_id: user.id],
+        else: []
+
+    snap = Access.dashboard_snapshot(opts)
 
     socket
     |> assign(:request_rows, row_pairs(snap.requests, Constants.request_statuses()))
@@ -33,7 +41,6 @@ defmodule OwlGateWeb.DashboardLive do
     <.operator_shell
       flash={@flash}
       current_user={@current_user}
-      dev_routes={Application.get_env(:owlgate, :dev_routes, false)}
       wrapper_class="space-y-6"
     >
       <div class="flex justify-between items-start gap-4 flex-wrap">

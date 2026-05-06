@@ -20,7 +20,15 @@ defmodule OwlGateWeb.Router do
 
     get "/", PageController, :home
 
-    live_session :operator do
+    get "/login", UserSessionController, :new
+    post "/login", UserSessionController, :create
+    delete "/logout", UserSessionController, :delete
+
+    get "/register", UserRegistrationController, :new
+    post "/register", UserRegistrationController, :create
+
+    live_session :operator,
+      on_mount: [{OwlGateWeb.Live.Auth, :require_authenticated_user}] do
       live "/dashboard", DashboardLive
       live "/access-requests", AccessRequestLive.Index
       live "/access-requests/:id", AccessRequestLive.Show
@@ -29,16 +37,21 @@ defmodule OwlGateWeb.Router do
     end
   end
 
-  if Application.compile_env(:owlgate, :dev_routes, false) do
-    scope "/dev", OwlGateWeb do
-      pipe_through :browser
+  scope "/admin", OwlGateWeb.Admin, as: :admin do
+    pipe_through :browser
 
-      get "/session", DevSessionController, :new
-      post "/session", DevSessionController, :create
-      delete "/session", DevSessionController, :delete
+    live_session :admin,
+      on_mount: [{OwlGateWeb.Live.Auth, :require_admin}] do
+      live "/users", UserLive.Index
+      live "/users/new", UserLive.Form, :new
+      live "/users/:id/edit", UserLive.Form, :edit
+      live "/applications", ApplicationLive.Index
+      live "/applications/new", ApplicationLive.Form, :new
+      live "/applications/:id/edit", ApplicationLive.Form, :edit
     end
+  end
 
-    # Enable LiveDashboard and Swoosh mailbox preview in development
+  if Application.compile_env(:owlgate, :dev_routes, false) do
     import Phoenix.LiveDashboard.Router
 
     scope "/dev" do

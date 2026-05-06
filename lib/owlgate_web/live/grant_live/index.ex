@@ -64,12 +64,19 @@ defmodule OwlGateWeb.GrantLive.Index do
   end
 
   defp load_grants(socket) do
+    user = socket.assigns.current_user
+
     opts =
       case socket.assigns.filter_status do
         nil -> []
         status when status in @filterable -> [status: status]
         _ -> []
       end
+
+    opts =
+      if AccessPolicy.employee_data_scope?(user),
+        do: Keyword.put(opts, :user_id, user.id),
+        else: opts
 
     assign(socket, :grants, Access.list_grants(opts))
   end
@@ -87,31 +94,30 @@ defmodule OwlGateWeb.GrantLive.Index do
     <.operator_shell
       flash={@flash}
       current_user={@current_user}
-      dev_routes={Application.get_env(:owlgate, :dev_routes, false)}
       wrapper_class="space-y-8"
     >
       <.operator_page_header
         title="Access grants"
-        subtitle="Active provisioning outcomes. Managers and admins can queue revokes on active grants."
-      >
-        <:actions>
-          <.operator_quick_links omit={[:grants]} />
-        </:actions>
-      </.operator_page_header>
+        subtitle={grant_page_subtitle(@current_user)}
+      />
 
       <p :if={@action_error} class="text-sm text-error">{@action_error}</p>
 
       <div class="flex flex-wrap gap-3 items-center justify-between">
         <h2 class="font-medium sr-only">Filter</h2>
-        <.status_select_filter
-          form_id="grant-filter-form"
-          statuses={Constants.grant_statuses()}
-          filter_status={@filter_status}
-        />
+        <.status_select_filter form_id="grant-filter-form" statuses={Constants.grant_statuses()} filter_status={@filter_status} />
       </div>
 
       <.grants_table grants={@grants} can_revoke?={@can_revoke?} />
     </.operator_shell>
     """
+  end
+
+  defp grant_page_subtitle(user) do
+    if AccessPolicy.employee_data_scope?(user) do
+      "Your provisioned access. Contact a manager if something looks wrong."
+    else
+      "Active provisioning outcomes across all users. Managers and admins can queue revokes on active grants."
+    end
   end
 end

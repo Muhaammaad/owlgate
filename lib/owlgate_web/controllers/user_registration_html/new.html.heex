@@ -1,0 +1,65 @@
+<Layouts.flash_group flash={@flash} />
+
+<div class="min-h-[70vh] px-4 py-16 sm:px-6 lg:px-8">
+  <div class="mx-auto max-w-md space-y-6">
+    <div class="flex justify-between items-center gap-4">
+      <h1 class="text-2xl font-semibold">Create account</h1>
+      <Layouts.theme_toggle />
+    </div>
+
+    <p class="text-sm text-base-content/70">
+      The first account becomes an <strong>admin</strong>. Later signups are employees.
+      Password must be at least 8 characters.
+    </p>
+
+    <form
+      action={~p"/register"}
+      method="post"
+      class="rounded-box border border-base-300 bg-base-200/30 p-6 space-y-4"
+    >
+      <input type="hidden" name="_csrf_token" value={@csrf_token} />
+
+      <label class="form-control w-full">
+        <span class="label-text text-sm">Email</span>
+        <input
+          type="email"
+          name="user[email]"
+          value={@email}
+          required
+          autocomplete="email"
+          class="input input-bordered w-full"
+        />
+      </label>
+
+      <label class="form-control w-full">
+        <span class="label-text text-sm">Name</span>
+        <input
+          type="text"
+          name="user[name]"
+          value={@name}
+          required
+          autocomplete="name"
+          class="input input-bordered w-full"
+        />
+      </label>
+
+      <label class="form-control w-full">
+        <span class="label-text text-sm">Password</span>
+        <input
+          type="password"
+          name="user[password]"
+          required
+          autocomplete="new-password"
+          class="input input-bordered w-full"
+        />
+      </label>
+
+      <button type="submit" class="btn btn-primary w-full">Register</button>
+    </form>
+
+    <div class="flex flex-wrap gap-3 text-sm">
+      <.link navigate={~p"/"} class="link link-primary">Home</.link>
+      <.link navigate={~p"/login"} class="link link-primary">Sign in</.link>
+    </div>
+  </div>
+</div>

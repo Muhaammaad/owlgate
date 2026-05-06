@@ -12,6 +12,82 @@ defmodule OwlGateWeb.OperatorLiveTest do
     assert {:error, {:redirect, %{to: "/login"}}} = live(conn, ~p"/dashboard")
   end
 
+  test "employee does not see another user's grant on grants page", %{conn: conn} do
+    %{manager: mgr, employee: emp, app: app} = seed_org()
+    uniq = System.unique_integer([:positive])
+
+    {:ok, peer} =
+      OwlGate.Accounts.create_user(%{
+        email: "peer#{uniq}@example.com",
+        name: "Peer",
+        role: :employee,
+        manager_id: nil
+      })
+
+    _ = OwlGate.Accounts.set_password!(peer, "Password123!")
+
+    {:ok, _} =
+      Access.create_request(emp, %{
+        "application_id" => app.id,
+        "reason" => "Live grants isolation"
+      })
+
+    assert [req] = Access.list_access_requests(status: :pending)
+
+    conn = log_in_user(conn, mgr)
+
+    {:ok, lv, _} = live(conn, ~p"/access-requests/#{req.id}")
+
+    lv
+    |> element(~s(button[phx-click="approve"]))
+    |> render_click()
+
+    {:ok, _lv_emp, html_emp} =
+      conn
+      |> log_in_user(emp)
+      |> live(~p"/grants")
+
+    assert html_emp =~ emp.email
+
+    {:ok, _lv_peer, html_peer} =
+      build_conn()
+      |> log_in_user(peer)
+      |> live(~p"/grants")
+
+    refute html_peer =~ emp.email
+  end
+
+  test "admin sees grant panel with revoke on provisioned request", %{conn: conn} do
+    %{owner: admin, manager: mgr, employee: emp, app: app} = seed_org()
+
+    {:ok, _} =
+      Access.create_request(emp, %{
+        "application_id" => app.id,
+        "reason" => "Check admin revoke from request show"
+      })
+
+    assert [req] = Access.list_access_requests(status: :pending)
+
+    conn_m = log_in_user(conn, mgr)
+    {:ok, lv, _} = live(conn_m, ~p"/access-requests/#{req.id}")
+
+    lv
+    |> element(~s(button[phx-click="approve"]))
+    |> render_click()
+
+    assert %OwlGate.Access.AccessRequest{status: :provisioned} =
+             Repo.get!(OwlGate.Access.AccessRequest, req.id)
+
+    {:ok, _lv, html} =
+      conn
+      |> log_in_user(admin)
+      |> live(~p"/access-requests/#{req.id}")
+
+    assert html =~ "Queue revoke"
+    assert html =~ "Grant"
+    assert html =~ mgr.email
+  end
+
   test "guest is redirected away from grants and audit", %{conn: conn} do
     assert {:error, {:redirect, %{to: "/login"}}} = live(conn, ~p"/grants")
     assert {:error, {:redirect, %{to: "/login"}}} = live(conn, ~p"/audit-events")

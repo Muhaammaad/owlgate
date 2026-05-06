@@ -3,6 +3,7 @@ defmodule OwlGate.Audit do
 
   import Ecto.Query, warn: false
 
+  alias OwlGate.Access.{AccessGrant, AccessRequest, Constants}
   alias OwlGate.Audit.Event
   alias OwlGate.Repo
 
@@ -27,12 +28,15 @@ defmodule OwlGate.Audit do
   @doc """
   Lists audit events with optional actor/action filters.
 
-  Supports `:limit` (default 200) and preloads `:actor` for UI display.
+  Supports `:limit` (default 200), `:viewer_user_id` (employees only — limits to
+  events they acted in or that reference their access requests / grants),
+  and preloads `:actor` for UI display.
   """
   def list_events(opts \\ []) do
     limit = Keyword.get(opts, :limit, 200)
 
     Event
+    |> maybe_scope_for_viewer(Keyword.get(opts, :viewer_user_id))
     |> maybe_filter_actor(Keyword.get(opts, :actor_id))
     |> maybe_filter_action(Keyword.get(opts, :action))
     |> maybe_filter_entity_type(Keyword.get(opts, :entity_type))
@@ -40,6 +44,31 @@ defmodule OwlGate.Audit do
     |> limit(^limit)
     |> preload([:actor])
     |> Repo.all()
+  end
+
+  defp maybe_scope_for_viewer(query, nil), do: query
+
+  defp maybe_scope_for_viewer(query, viewer_id) when is_integer(viewer_id) do
+    req_ids =
+      from r in AccessRequest,
+        where: r.user_id == ^viewer_id,
+        select: r.id
+
+    grant_ids =
+      from g in AccessGrant,
+        where: g.user_id == ^viewer_id,
+        select: g.id
+
+    et_req = Constants.entity_access_request()
+    et_grant = Constants.entity_access_grant()
+
+    where(
+      query,
+      [e],
+      e.actor_id == ^viewer_id or
+        (e.entity_type == ^et_req and e.entity_id in subquery(req_ids)) or
+        (e.entity_type == ^et_grant and e.entity_id in subquery(grant_ids))
+    )
   end
 
   defp maybe_filter_actor(query, nil), do: query
@@ -55,3 +84,4 @@ defmodule OwlGate.Audit do
   defp maybe_filter_entity_type(query, entity_type),
     do: where(query, [e], e.entity_type == ^entity_type)
 end
+

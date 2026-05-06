@@ -28,5 +28,15 @@ defmodule OwlGate.AccessDashboardTest do
     assert snap.requests[:pending] == 1
     assert snap.requests[:approved] == 0
     assert snap.requests[:provisioned] == 0
+
+    scoped = Access.dashboard_snapshot(scope_user_id: employee.id)
+    assert scoped.requests[:pending] == 1
+    assert scoped.requests[:approved] == 0
+
+    # User id that is not present in this isolated test database.
+    other_id = 9_999_999
+    assert OwlGate.Repo.get(OwlGate.Accounts.User, other_id) == nil
+    empty_scope = Access.dashboard_snapshot(scope_user_id: other_id)
+    assert empty_scope.requests[:pending] == 0
   end
 end
