@@ -9,8 +9,18 @@ defmodule OwlGate.Audit do
 
   @doc """
   Writes an immutable audit event for lifecycle actions.
+
+  When `OwlGateWeb.Plugs.AuditRequestContext` ran for the same request, its
+  fields (e.g. `client_ip`, `user_agent`) are merged into `metadata` unless
+  the caller already set those keys.
   """
   def log(actor_id, action, entity_type, entity_id, metadata \\ %{}) do
+    metadata =
+      case OwlGate.Audit.RequestContext.peek() do
+        nil -> metadata
+        ctx -> Map.merge(ctx, metadata)
+      end
+
     attrs = %{
       actor_id: actor_id,
       action: action,
@@ -84,4 +94,3 @@ defmodule OwlGate.Audit do
   defp maybe_filter_entity_type(query, entity_type),
     do: where(query, [e], e.entity_type == ^entity_type)
 end
-

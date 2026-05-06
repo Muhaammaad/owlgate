@@ -67,7 +67,9 @@ defmodule OwlGate.MixProject do
       {:dns_cluster, "~> 0.2.0"},
       {:bandit, "~> 1.5"},
       {:oban, "~> 2.17"},
-      {:bcrypt_elixir, "~> 3.2"}
+      {:bcrypt_elixir, "~> 3.2"},
+      {:hammer, "~> 6.2"},
+      {:dotenvy, "~> 1.1", only: [:dev]}
     ]
   end
 

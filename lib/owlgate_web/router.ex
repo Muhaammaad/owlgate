@@ -13,6 +13,17 @@ defmodule OwlGateWeb.Router do
 
   pipeline :api do
     plug :accepts, ["json"]
+    plug :fetch_session
+    plug OwlGateWeb.Plugs.AssignCurrentUser
+  end
+
+  pipeline :api_authenticated do
+    plug OwlGateWeb.Plugs.RequireAuthenticatedJson
+  end
+
+  pipeline :api_reviewer do
+    plug OwlGateWeb.Plugs.RequireAuthenticatedJson
+    plug OwlGateWeb.Plugs.RequireReviewerJson
   end
 
   scope "/", OwlGateWeb do
@@ -49,6 +60,21 @@ defmodule OwlGateWeb.Router do
       live "/applications/new", ApplicationLive.Form, :new
       live "/applications/:id/edit", ApplicationLive.Form, :edit
     end
+  end
+
+  scope "/api", OwlGateWeb.Api do
+    pipe_through [:api, :api_authenticated]
+
+    post "/access-requests", AccessRequestController, :create
+    get "/audit-events", AuditEventController, :index
+  end
+
+  scope "/api", OwlGateWeb.Api do
+    pipe_through [:api, :api_reviewer]
+
+    post "/access-requests/:id/approve", AccessRequestController, :approve
+    post "/access-requests/:id/deny", AccessRequestController, :deny
+    post "/access-grants/:id/revoke", AccessGrantController, :revoke
   end
 
   if Application.compile_env(:owlgate, :dev_routes, false) do

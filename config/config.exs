@@ -10,7 +10,9 @@ import Config
 config :owlgate,
   namespace: OwlGate,
   ecto_repos: [OwlGate.Repo],
-  generators: [timestamp_type: :utc_datetime]
+  generators: [timestamp_type: :utc_datetime],
+  mail_from: {"OwlGate", "noreply@owlgate.local"},
+  public_base_url: "http://localhost:4000"
 
 config :owlgate, Oban,
   repo: OwlGate.Repo,
@@ -72,6 +74,14 @@ config :logger, :default_formatter,
 
 # Use Jason for JSON parsing in Phoenix
 config :phoenix, :json_library, Jason
+
+config :hammer,
+  backend:
+    {Hammer.Backend.ETS,
+     [
+       expiry_ms: 60_000 * 60 * 4,
+       cleanup_interval_ms: 60_000 * 10
+     ]}
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
