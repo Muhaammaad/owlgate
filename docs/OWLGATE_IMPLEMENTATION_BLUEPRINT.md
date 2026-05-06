@@ -186,6 +186,12 @@ Implementation patterns:
 
 All mutating routes require authenticated actor with role checks.
 
+Implementation notes (current):
+
+- Authentication uses the **same session cookie** as the HTML UI (`fetch_session` + `AssignCurrentUser`). Clients obtain a session by signing in through `/login`, then reuse the cookie for JSON requests.
+- `POST /api/access-requests` is **rate limited** per client IP (Hammer / configured backend).
+- Sensitive audit metadata (`client_ip`, `user_agent`) is merged into `Audit.log/5` metadata for API-driven mutations that run the audit request plug (see `README.md`).
+
 ## 10) Testing Strategy
 
 ### Unit
@@ -227,6 +233,5 @@ All mutating routes require authenticated actor with role checks.
   3. test
   4. credo
   5. sobelow
-  6. dialyzer (can be non-blocking initially)
 - commit hooks for formatting and linting
 - semantic, scoped commit messages

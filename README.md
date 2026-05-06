@@ -2,6 +2,9 @@
 
 Phoenix app for access governance flows: request → review → provision → revoke, with an immutable audit trail and role-aware policies.
 
+Architecture and lifecycle diagrams are documented in [`docs/ARCHITECTURE.md`](./docs/ARCHITECTURE.md).
+The implementation handoff blueprint lives in [`docs/OWLGATE_IMPLEMENTATION_BLUEPRINT.md`](./docs/OWLGATE_IMPLEMENTATION_BLUEPRINT.md).
+
 ## Requirements
 
 - Elixir ~> 1.15 and Erlang/OTP compatible with Phoenix 1.8

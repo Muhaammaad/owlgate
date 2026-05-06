@@ -68,4 +68,38 @@ defmodule OwlGate.AccessCreateRequestTest do
     assert [_] = Access.list_grants(user_id: emp.id)
     assert [] == Access.list_grants(user_id: peer.id)
   end
+
+  test "list_access_requests search filters by requester email substring" do
+    %{employee: emp, app: app} = seed_org()
+
+    assert {:ok, _} =
+             Access.create_request(emp, %{
+               "application_id" => app.id,
+               "reason" => "Search filter test"
+             })
+
+    [local, _domain] = String.split(emp.email, "@")
+    q = String.slice(local, 0, max(1, min(4, String.length(local))))
+
+    assert [_] = Access.list_access_requests(search: q)
+    assert [] == Access.list_access_requests(search: "zzzznotfound9999")
+  end
+
+  test "list_access_requests search matches application slug, application name, and request id" do
+    %{employee: emp, app: app} = seed_org()
+
+    assert {:ok, req} =
+             Access.create_request(emp, %{
+               "application_id" => app.id,
+               "reason" => "Search across related fields"
+             })
+
+    assert Enum.any?(Access.list_access_requests(search: app.slug), &(&1.id == req.id))
+    assert Enum.any?(Access.list_access_requests(search: app.name), &(&1.id == req.id))
+
+    assert Enum.any?(
+             Access.list_access_requests(search: Integer.to_string(req.id)),
+             &(&1.id == req.id)
+           )
+  end
 end
