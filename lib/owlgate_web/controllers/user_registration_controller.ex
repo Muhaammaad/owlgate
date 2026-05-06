@@ -2,6 +2,7 @@ defmodule OwlGateWeb.UserRegistrationController do
   use OwlGateWeb, :controller
 
   alias OwlGate.Accounts
+  alias OwlGate.Accounts.User
   alias OwlGateWeb.FormHelpers
 
   @session_key "current_user_id"
@@ -10,7 +11,8 @@ defmodule OwlGateWeb.UserRegistrationController do
     render(conn, :new,
       csrf_token: Plug.CSRFProtection.get_csrf_token(),
       email: "",
-      name: ""
+      name: "",
+      role: "employee"
     )
   end
 
@@ -20,7 +22,7 @@ defmodule OwlGateWeb.UserRegistrationController do
         conn
         |> put_session(@session_key, user.id)
         |> put_flash(:info, "Account created. You are signed in.")
-        |> redirect(to: ~p"/dashboard")
+        |> redirect(to: redirect_path_for(user))
 
       {:error, %Ecto.Changeset{} = cs} ->
         conn
@@ -28,7 +30,8 @@ defmodule OwlGateWeb.UserRegistrationController do
         |> render(:new,
           csrf_token: Plug.CSRFProtection.get_csrf_token(),
           email: Map.get(params, "email", ""),
-          name: Map.get(params, "name", "")
+          name: Map.get(params, "name", ""),
+          role: Map.get(params, "role", "employee")
         )
     end
   end
@@ -38,4 +41,7 @@ defmodule OwlGateWeb.UserRegistrationController do
     |> put_flash(:error, "Invalid form submission.")
     |> redirect(to: ~p"/register")
   end
+
+  defp redirect_path_for(%User{role: :admin}), do: ~p"/admin/users"
+  defp redirect_path_for(%User{}), do: ~p"/dashboard"
 end

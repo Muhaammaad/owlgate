@@ -4,7 +4,7 @@ defmodule OwlGate.Audit do
   import Ecto.Query, warn: false
 
   alias OwlGate.Access.{AccessGrant, AccessRequest, Constants}
-  alias OwlGate.Audit.Event
+  alias OwlGate.Audit.{Event, RequestContext}
   alias OwlGate.Repo
 
   @doc """
@@ -16,7 +16,7 @@ defmodule OwlGate.Audit do
   """
   def log(actor_id, action, entity_type, entity_id, metadata \\ %{}) do
     metadata =
-      case OwlGate.Audit.RequestContext.peek() do
+      case RequestContext.peek() do
         nil -> metadata
         ctx -> Map.merge(ctx, metadata)
       end

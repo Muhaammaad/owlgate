@@ -8,8 +8,7 @@
     </div>
 
     <p class="text-sm text-base-content/70">
-      The first account becomes an <strong>admin</strong>. Later signups are employees.
-      Password must be at least 8 characters.
+      Choose your role during signup. Password must be at least 8 characters.
     </p>
 
     <form
@@ -54,7 +53,16 @@
         />
       </label>
 
-      <button type="submit" class="btn btn-primary w-full">Register</button>
+      <label class="form-control w-full">
+        <span class="label-text text-sm">Role</span>
+        <select name="user[role]" class="select select-bordered w-full" required>
+          <option value="employee" selected={@role == "employee"}>Employee</option>
+          <option value="manager" selected={@role == "manager"}>Manager</option>
+          <option value="admin" selected={@role == "admin"}>Admin</option>
+        </select>
+      </label>
+
+      <button type="submit" class="btn btn-primary w-full my-4">Register</button>
     </form>
 
     <div class="flex flex-wrap gap-3 text-sm">

@@ -70,7 +70,7 @@ defmodule OwlGate.Accounts do
     end
   end
 
-  @doc "Registers a new user (first account becomes admin)."
+  @doc "Registers a new user with the selected role."
   def register_user(attrs) do
     %User{}
     |> User.register_changeset(attrs)

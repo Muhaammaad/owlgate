@@ -94,7 +94,7 @@ defmodule OwlGateWeb.ApiControllerTest do
     mgr_events = json_response(mgr_conn, 200)["data"]
 
     assert length(mgr_events) >= length(emp_events)
-    assert length(mgr_events) > 0
+    refute mgr_events == []
   end
 
   test "audit events include request metadata when AuditRequestContext ran" do

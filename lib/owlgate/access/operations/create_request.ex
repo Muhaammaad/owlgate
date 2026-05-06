@@ -78,10 +78,16 @@ defmodule OwlGate.Access.Operations.CreateRequest do
     Multi.new()
     |> Multi.insert(:request, AccessRequest.create_changeset(%AccessRequest{}, attrs))
     |> Multi.run(:audit, fn _repo, %{request: request} ->
-      Audit.log(actor_id, "access_request.created", Constants.entity_access_request(), request.id, %{
-        application_id: request.application_id,
-        user_id: request.user_id
-      })
+      Audit.log(
+        actor_id,
+        "access_request.created",
+        Constants.entity_access_request(),
+        request.id,
+        %{
+          application_id: request.application_id,
+          user_id: request.user_id
+        }
+      )
     end)
     |> Repo.transaction()
     |> OperationResult.from_transaction(:request)

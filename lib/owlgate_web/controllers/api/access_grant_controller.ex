@@ -10,15 +10,16 @@ defmodule OwlGateWeb.Api.AccessGrantController do
   def revoke(conn, %{"id" => raw_id}) do
     user = conn.assigns.current_user
 
-    with {:ok, id} <- Params.parse_path_id(raw_id) do
-      case Access.request_revoke(user, id) do
-        {:ok, %AccessGrant{} = grant} ->
-          json(conn, %{data: serialize_grant(grant)})
+    case Params.parse_path_id(raw_id) do
+      {:ok, id} ->
+        case Access.request_revoke(user, id) do
+          {:ok, %AccessGrant{} = grant} ->
+            json(conn, %{data: serialize_grant(grant)})
 
-        {:error, reason} ->
-          JsonHelpers.domain_error(conn, {:error, reason})
-      end
-    else
+          {:error, reason} ->
+            JsonHelpers.domain_error(conn, {:error, reason})
+        end
+
       :error ->
         JsonHelpers.invalid_path_id(conn)
     end

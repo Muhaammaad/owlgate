@@ -1,19 +1,26 @@
 defmodule OwlGateWeb.Router do
   use OwlGateWeb, :router
 
+  @csp "default-src 'self'; base-uri 'self'; frame-ancestors 'none'; " <>
+         "img-src 'self' data: https:; font-src 'self' data:; " <>
+         "style-src 'self' 'unsafe-inline'; " <>
+         "script-src 'self' 'unsafe-inline' 'unsafe-eval'; " <>
+         "connect-src 'self' ws: wss:"
+
   pipeline :browser do
     plug :accepts, ["html"]
     plug :fetch_session
     plug :fetch_live_flash
     plug :put_root_layout, html: {OwlGateWeb.Layouts, :root}
     plug :protect_from_forgery
-    plug :put_secure_browser_headers
+    plug :put_secure_browser_headers, %{"content-security-policy" => @csp}
     plug OwlGateWeb.Plugs.AssignCurrentUser
   end
 
   pipeline :api do
     plug :accepts, ["json"]
     plug :fetch_session
+    plug :protect_from_forgery
     plug OwlGateWeb.Plugs.AssignCurrentUser
   end
 

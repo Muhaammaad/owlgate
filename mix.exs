@@ -27,7 +27,7 @@ defmodule OwlGate.MixProject do
 
   def cli do
     [
-      preferred_envs: [precommit: :test]
+      preferred_envs: [precommit: :test, ci: :test]
     ]
   end
 
@@ -69,7 +69,9 @@ defmodule OwlGate.MixProject do
       {:oban, "~> 2.17"},
       {:bcrypt_elixir, "~> 3.2"},
       {:hammer, "~> 6.2"},
-      {:dotenvy, "~> 1.1", only: [:dev]}
+      {:dotenvy, "~> 1.1"},
+      {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
+      {:sobelow, "~> 0.14", only: [:dev, :test], runtime: false}
     ]
   end
 
@@ -92,7 +94,14 @@ defmodule OwlGate.MixProject do
         "esbuild owlgate --minify",
         "phx.digest"
       ],
-      precommit: ["compile --warnings-as-errors", "deps.unlock --unused", "format", "test"]
+      precommit: ["compile --warnings-as-errors", "deps.unlock --unused", "format", "test"],
+      ci: [
+        "format --check-formatted",
+        "compile --warnings-as-errors",
+        "credo",
+        "sobelow_ci",
+        "test"
+      ]
     ]
   end
 end

@@ -9,8 +9,6 @@ defmodule OwlGate.Accounts.User do
   use Ecto.Schema
   import Ecto.Changeset
 
-  alias OwlGate.Repo
-
   @roles [:employee, :manager, :admin]
   @email_regex ~r/^[^\s]+@[^\s]+$/
 
@@ -40,30 +38,20 @@ defmodule OwlGate.Accounts.User do
   @doc "Empty or repopulated registration form (no insert validations yet)."
   def registration_form_changeset(user \\ %__MODULE__{}, attrs \\ %{}) do
     user
-    |> cast(attrs, [:email, :name, :password])
-    |> update_change(:email, fn e ->
-      if is_binary(e), do: String.downcase(String.trim(e)), else: e
-    end)
+    |> cast(attrs, [:email, :name, :password, :role])
+    |> update_change(:email, fn e -> if is_binary(e), do: String.downcase(String.trim(e)), else: e end)
   end
 
-  @doc "Public self-registration insert changeset. First user becomes admin."
+  @doc "Public self-registration insert changeset."
   def register_changeset(user, attrs) do
     user
     |> registration_form_changeset(attrs)
-    |> validate_required([:email, :name, :password])
+    |> validate_required([:email, :name, :password, :role])
     |> validate_length(:password, min: 8, max: 72)
     |> validate_email_and_manager()
-    |> put_change(:role, registration_role())
     |> put_change(:manager_id, nil)
     |> put_change(:mfa_required, false)
     |> hash_password()
-  end
-
-  defp registration_role do
-    case Repo.aggregate(__MODULE__, :count, :id) do
-      0 -> :admin
-      _ -> :employee
-    end
   end
 
   @doc "Admin HTML form (cast only, no insert validations)."

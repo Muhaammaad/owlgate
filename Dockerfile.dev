@@ -1,0 +1,15 @@
+FROM elixir:1.15.8
+
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends build-essential git curl ca-certificates inotify-tools && \
+    rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+RUN mix local.hex --force && mix local.rebar --force
+
+ENV MIX_ENV=dev
+
+EXPOSE 4000
+
+CMD ["sh", "-c", "mix deps.get && mix ecto.create && mix ecto.migrate && mix phx.server"]

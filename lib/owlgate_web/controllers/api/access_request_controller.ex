@@ -37,15 +37,16 @@ defmodule OwlGateWeb.Api.AccessRequestController do
   def approve(conn, %{"id" => raw_id}) do
     user = conn.assigns.current_user
 
-    with {:ok, id} <- Params.parse_path_id(raw_id) do
-      case Access.approve_request(user, id) do
-        {:ok, %AccessRequest{} = req} ->
-          json(conn, %{data: serialize_request(req)})
+    case Params.parse_path_id(raw_id) do
+      {:ok, id} ->
+        case Access.approve_request(user, id) do
+          {:ok, %AccessRequest{} = req} ->
+            json(conn, %{data: serialize_request(req)})
 
-        {:error, reason} ->
-          JsonHelpers.domain_error(conn, {:error, reason})
-      end
-    else
+          {:error, reason} ->
+            JsonHelpers.domain_error(conn, {:error, reason})
+        end
+
       :error ->
         JsonHelpers.invalid_path_id(conn)
     end
@@ -55,15 +56,16 @@ defmodule OwlGateWeb.Api.AccessRequestController do
     user = conn.assigns.current_user
     reason = extract_reason(conn)
 
-    with {:ok, id} <- Params.parse_path_id(raw_id) do
-      case Access.deny_request(user, id, reason) do
-        {:ok, %AccessRequest{} = req} ->
-          json(conn, %{data: serialize_request(req)})
+    case Params.parse_path_id(raw_id) do
+      {:ok, id} ->
+        case Access.deny_request(user, id, reason) do
+          {:ok, %AccessRequest{} = req} ->
+            json(conn, %{data: serialize_request(req)})
 
-        {:error, reason} ->
-          JsonHelpers.domain_error(conn, {:error, reason})
-      end
-    else
+          {:error, reason} ->
+            JsonHelpers.domain_error(conn, {:error, reason})
+        end
+
       :error ->
         JsonHelpers.invalid_path_id(conn)
     end

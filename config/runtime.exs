@@ -1,5 +1,38 @@
 import Config
 
+# Development: optional `.env` / `.env.local` (see `.env.example`) before reading `System.get_env/1`.
+# Production relies on the host environment only (`DATABASE_URL`, etc.).
+if config_env() == :dev do
+  import Dotenvy
+
+  project_root = Path.expand("..", __DIR__)
+
+  Dotenvy.source([
+    Path.join(project_root, ".env"),
+    Path.join(project_root, ".env.local"),
+    System.get_env()
+  ])
+
+  db_port =
+    case System.get_env("DATABASE_PORT") do
+      nil ->
+        5432
+
+      raw ->
+        case Integer.parse(String.trim(raw)) do
+          {n, ""} -> n
+          _ -> 5432
+        end
+    end
+
+  config :owlgate, OwlGate.Repo,
+    username: System.get_env("DATABASE_USER", "postgres"),
+    password: System.get_env("DATABASE_PASSWORD", "postgres"),
+    hostname: System.get_env("DATABASE_HOST", "localhost"),
+    port: db_port,
+    database: System.get_env("DATABASE_NAME", "owlgate_dev")
+end
+
 # config/runtime.exs is executed for all environments, including
 # during releases. It is executed after compilation and before the
 # system starts, so it is typically used to load production configuration
@@ -22,6 +55,10 @@ end
 
 config :owlgate, OwlGateWeb.Endpoint,
   http: [port: String.to_integer(System.get_env("PORT", "4000"))]
+
+if base = System.get_env("PUBLIC_BASE_URL") do
+  config :owlgate, :public_base_url, base
+end
 
 if config_env() == :prod do
   database_url =

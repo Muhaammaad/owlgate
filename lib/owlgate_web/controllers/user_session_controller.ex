@@ -2,6 +2,7 @@ defmodule OwlGateWeb.UserSessionController do
   use OwlGateWeb, :controller
 
   alias OwlGate.Accounts
+  alias OwlGate.Accounts.User
 
   @session_key "current_user_id"
 
@@ -18,7 +19,7 @@ defmodule OwlGateWeb.UserSessionController do
         conn
         |> put_session(@session_key, user.id)
         |> put_flash(:info, "Welcome back.")
-        |> redirect(to: ~p"/dashboard")
+        |> redirect(to: redirect_path_for(user))
 
       {:error, :password_not_set} ->
         conn
@@ -45,4 +46,7 @@ defmodule OwlGateWeb.UserSessionController do
     |> put_flash(:info, "Signed out.")
     |> redirect(to: ~p"/")
   end
+
+  defp redirect_path_for(%User{role: :admin}), do: ~p"/admin/users"
+  defp redirect_path_for(%User{}), do: ~p"/dashboard"
 end

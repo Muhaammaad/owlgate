@@ -1,6 +1,6 @@
 import Config
 
-# Configure your database
+# Configure your database (overridden at runtime in dev by `config/runtime.exs` + optional `.env`)
 config :owlgate, OwlGate.Repo,
   username: "postgres",
   password: "postgres",
@@ -17,9 +17,9 @@ config :owlgate, OwlGate.Repo,
 # watchers to your application. For example, we can use it
 # to bundle .js and .css sources.
 config :owlgate, OwlGateWeb.Endpoint,
-  # Binding to loopback ipv4 address prevents access from other machines.
-  # Change to `ip: {0, 0, 0, 0}` to allow access from other machines.
-  http: [ip: {127, 0, 0, 1}],
+  # Bind all interfaces so containerized dev (`docker compose up`) is reachable
+  # from the host via published port 4000.
+  http: [ip: {0, 0, 0, 0}],
   check_origin: false,
   code_reloader: true,
   debug_errors: true,

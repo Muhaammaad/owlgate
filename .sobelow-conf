@@ -1,0 +1,11 @@
+[
+  exit: "low",
+  ignore_files: [],
+  ignore: [],
+  out: nil,
+  private: false,
+  router: "lib/owlgate_web/router.ex",
+  skip: false,
+  threshold: :low,
+  version: false
+]
